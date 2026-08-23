@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WaterWise 💧 - نظام ترشيد متكامل</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Tahoma', system-ui, sans-serif;
+        }
+
+        :root {
+            --primary: #0077b6;
+            --primary-dark: #023e8a;
+            --primary-light: #caf0f8;
+            --primary-gradient: linear-gradient(135deg, #0077b6, #00b4d8);
+            --success: #2ecc71;
+            --success-dark: #27ae60;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --white: #ffffff;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.12);
+            --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.15);
+            --border-radius: 16px;
+            --border-radius-lg: 24px;
+            --border-radius-xl: 32px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background: linear-gradient(160deg, #d4f1f9 0%, #a8d8ea 40%, #90e0ef 100%);
+            min-height: 100vh;
+            color: var(--gray-800);
+            overflow-x: hidden;
+        }
+
+        /* Water Background */
+        .water-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.05));
+            animation: floatUp 10s infinite ease-in-out;
+        }
+        .bubble:nth-child(1) { width: 100px; height: 100px; left: 5%; animation-duration: 14s; }
+        .bubble:nth-child(2) { width: 150px; height: 150px; left: 20%; animation-duration: 18s; animation-delay: 2s; }
+        .bubble:nth-child(3) { width: 70px; height: 70px; left: 40%; animation-duration: 12s; animation-delay: 4s; }
+        .bubble:nth-child(4) { width: 120px; height: 120px; left: 60%; animation-duration: 16s; animation-delay: 1s; }
+        .bubble:nth-child(5) { width: 90px; height: 90px; left: 80%; animation-duration: 13s; animation-delay: 3s; }
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) scale(0.2) rotate(0deg); opacity: 0; }
+            15% { opacity: 0.6; }
+            85% { opacity: 0.6; }
+            100% { transform: translateY(-20vh) scale(1.2) rotate(720deg); opacity: 0; }
+        }
+
+        /* Layout */
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(16px);
+            border-radius: var(--border-radius-lg);
+            padding: 14px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            position: sticky;
+            top: 16px;
+            z-index: 50;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .header-left .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .header-left .logo i {
+            font-size: 2rem;
+            color: var(--primary);
+            animation: waterDrop 3s infinite;
+        }
+        @keyframes waterDrop {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.08) rotate(-6deg); }
+        }
+        .header-left .logo h1 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--primary-dark);
+        }
+        .header-left .logo h1 span { color: var(--primary); }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .header-right .date-display {
+            color: var(--gray-500);
+            font-size: 0.85rem;
+            font-weight: 500;
+            padding: 6px 16px;
+            background: var(--gray-50);
+            border-radius: 50px;
+            border: 1px solid var(--gray-200);
+        }
+        .header-right .menu-btn {
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--primary-dark);
+            transition: var(--transition);
+            background: none;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .header-right .menu-btn:hover {
+            background: var(--primary-light);
+            transform: scale(1.05);
+        }
+
+        /* Pages */
+        .page {
+            display: none;
+            animation: fadeSlide 0.5s ease;
+        }
+        .page.active { display: block; }
+        @keyframes fadeSlide {
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== HOME PAGE ===== */
+        .hero-section {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            border-radius: var(--border-radius-xl);
+            padding: 60px 40px;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 50%, rgba(0, 119, 182, 0.03), transparent 70%);
+            animation: heroGlow 10s infinite alternate;
+        }
+        @keyframes heroGlow {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(10%, 10%) scale(1.2); }
+        }
+
+        .hero-section .hero-icon {
+            font-size: 4.5rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: block;
+            position: relative;
+            z-index: 1;
+        }
+        .hero-section h2 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--primary-dark);
+            margin-bottom: 16px;
+            position: relative;
+            z-index: 1;
+        }
+        .hero-section h2 .highlight {
+            color: var(--primary);
+        }
+        .hero-section p {
+            font-size: 1.2rem;
+            color: var(--gray-600);
+            max-width: 600px;
+            margin: 0 auto 30px;
+            line-height: 1.8;
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-start {
+            background: var(--primary-gradient);
+            border: none;
+            padding: 20px 60px;
+            border-radius: 60px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--white);
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 8px 32px rgba(0, 119, 182, 0.4);
+            display: inline-flex;
+            align-items: center;
+            gap: 14px;
+            position: relative;
+            z-index: 1;
+        }
+        .btn-start:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 48px rgba(0, 119, 182, 0.5);
+        }
+        .btn-start:active { transform: scale(0.96); }
+        .btn-start i { font-size: 1.8rem; }
+
+        /* Quick Tips */
+        .quick-tips {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 30px;
+            position: relative;
+            z-index: 1;
+        }
+        .quick-tip {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(8px);
+            padding: 16px 20px;
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: var(--transition);
+            text-align: center;
+        }
+        .quick-tip:hover {
+            transform: translateY(-4px);
+            background: var(--white);
+            box-shadow: var(--shadow);
+        }
+        .quick-tip i {
+            font-size: 1.8rem;
+            color: var(--primary);
+            display: block;
+            margin-bottom: 6px;
+        }
+        .quick-tip .tip-text {
+            font-weight: 600;
+            color: var(--gray-700);
+            font-size: 0.9rem;
+        }
+        .quick-tip .tip-desc {
+            color: var(--gray-500);
+            font-size: 0.8rem;
+        }
+
+        /* ===== FAMILY PAGE ===== */
+        .card {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            border-radius: var(--border-radius-lg);
+            padding: 28px 30px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            margin-bottom: 24px;
+            transition: var(--transition);
+        }
+        .card:hover { box-shadow: var(--shadow-lg); }
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .card-title i { color: var(--primary); }
+
+        .members-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 16px;
+            margin: 16px 0;
+        }
+        .member-card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            padding: 18px 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(0, 0, 0, 0.04);
+            transition: var(--transition);
+        }
+        .member-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+        .member-card .member-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .member-card .member-header .icon { font-size: 1.8rem; color: var(--primary); }
+        .member-card .field-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-bottom: 10px;
+        }
+        .member-card .field-group label {
+            font-weight: 600;
+            color: var(--gray-600);
+            font-size: 0.85rem;
+        }
+        .member-card .field-group input {
+            padding: 8px 14px;
+            border: 2px solid var(--gray-200);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            background: var(--gray-50);
+        }
+        .member-card .field-group input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(0, 119, 182, 0.1);
+            background: var(--white);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 24px;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .btn:active { transform: scale(0.96); }
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: var(--white);
+            box-shadow: 0 4px 16px rgba(0, 119, 182, 0.35);
+        }
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 28px rgba(0, 119, 182, 0.45);
+        }
+        .btn-secondary {
+            background: var(--white);
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: var(--white);
+            transform: translateY(-3px);
+        }
+        .btn-success {
+            background: var(--success);
+            color: var(--white);
+            box-shadow: 0 4px 16px rgba(46, 204, 113, 0.35);
+        }
+        .btn-success:hover {
+            transform: translateY(-3px);
+            background: var(--success-dark);
+        }
+        .btn-danger {
+            background: var(--danger);
+            color: var(--white);
+            box-shadow: 0 4px 16px rgba(231, 76, 60, 0.3);
+        }
+        .btn-danger:hover {
+            transform: translateY(-3px);
+        }
+        .btn-sm { padding: 6px 16px; font-size: 0.85rem; }
+        .btn-lg { padding: 14px 36px; font-size: 1.05rem; }
+
+        .form-actions {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        /* ===== RESULTS PAGE ===== */
+        .result-score {
+            background: var(--primary-gradient);
+            color: var(--white);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .result-score .score-number {
+            font-size: 4rem;
+            font-weight: 800;
+        }
+        .result-score .score-label {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        .result-score .score-sub {
+            font-size: 1rem;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 14px;
+            margin: 14px 0;
+        }
+        .stat-box {
+            background: var(--white);
+            padding: 16px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            border: 1px solid rgba(0, 0, 0, 0.04);
+            transition: var(--transition);
+        }
+        .stat-box:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+        .stat-box i { font-size: 1.8rem; color: var(--primary); display: block; margin-bottom: 4px; }
+        .stat-box .value { font-size: 1.4rem; font-weight: 800; color: var(--primary-dark); }
+        .stat-box .label { color: var(--gray-500); font-size: 0.85rem; }
+
+        .compare-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--gray-100);
+        }
+        .compare-item:last-child { border-bottom: none; }
+        .compare-item .name { font-weight: 600; color: var(--gray-700); min-width: 80px; }
+        .compare-item .bar {
+            flex: 1;
+            margin: 0 14px;
+            height: 8px;
+            background: var(--gray-200);
+            border-radius: 50px;
+            overflow: hidden;
+        }
+        .compare-item .bar .fill {
+            height: 100%;
+            border-radius: 50px;
+            background: var(--primary-gradient);
+            transition: width 1.2s ease;
+        }
+        .compare-item .value { font-weight: 700; color: var(--primary); min-width: 60px; text-align: left; }
+
+        .chart-container {
+            background: var(--white);
+            padding: 16px;
+            border-radius: var(--border-radius);
+            margin: 14px 0;
+            border: 1px solid rgba(0, 0, 0, 0.04);
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.35);
+            z-index: 999;
+            display: none;
+            backdrop-filter: blur(4px);
+        }
+        .sidebar-overlay.active { display: block; }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 280px;
+            height: 100vh;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(24px);
+            box-shadow: -8px 0 40px rgba(0, 0, 0, 0.08);
+            transform: translateX(100%);
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 1000;
+            overflow-y: auto;
+            border-left: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .sidebar.open { transform: translateX(0); }
+
+        .sidebar-brand {
+            padding: 24px 28px 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: sticky;
+            top: 0;
+            background: rgba(255, 255, 255, 0.98);
+        }
+        .sidebar-brand i { font-size: 2rem; color: var(--primary); }
+        .sidebar-brand h2 { font-size: 1.4rem; font-weight: 800; color: var(--primary-dark); }
+        .sidebar-brand h2 span { color: var(--primary); }
+        .sidebar-close {
+            position: absolute;
+            left: 16px;
+            top: 20px;
+            font-size: 1.3rem;
+            cursor: pointer;
+            color: var(--gray-400);
+            transition: var(--transition);
+            background: none;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .sidebar-close:hover {
+            background: var(--gray-100);
+            color: var(--danger);
+            transform: rotate(90deg);
+        }
+
+        .sidebar-menu { padding: 12px 0 20px; }
+        .sidebar-menu .menu-label {
+            padding: 16px 28px 8px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--gray-400);
+            font-weight: 700;
+        }
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 28px;
+            color: var(--gray-600);
+            text-decoration: none;
+            transition: var(--transition);
+            border-right: 3px solid transparent;
+            font-weight: 500;
+            font-size: 0.95rem;
+            cursor: pointer;
+            border-radius: 0 12px 12px 0;
+            margin-right: 8px;
+        }
+        .sidebar-menu a:hover {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            border-right-color: var(--primary);
+            transform: translateX(-4px);
+        }
+        .sidebar-menu a.active {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            border-right-color: var(--primary);
+            font-weight: 700;
+        }
+        .sidebar-menu a i { width: 22px; color: var(--primary); font-size: 1.1rem; text-align: center; }
+        .sidebar-menu .divider {
+            height: 1px;
+            background: linear-gradient(to left, transparent, var(--gray-200), transparent);
+            margin: 12px 28px;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .app-container { padding: 12px; }
+            .hero-section { padding: 30px 20px; }
+            .hero-section h2 { font-size: 2rem; }
+            .hero-section p { font-size: 1rem; }
+            .btn-start { padding: 16px 40px; font-size: 1.1rem; }
+            .quick-tips { grid-template-columns: 1fr 1fr; }
+            .header { padding: 12px 16px; flex-wrap: wrap; gap: 8px; }
+            .header-left .logo h1 { font-size: 1.1rem; }
+            .header-right .date-display { font-size: 0.75rem; padding: 4px 12px; }
+            .members-grid { grid-template-columns: 1fr; }
+            .card { padding: 18px; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .result-score .score-number { font-size: 3rem; }
+            .sidebar { width: 280px; }
+        }
+        @media (max-width: 480px) {
+            .quick-tips { grid-template-columns: 1fr; }
+            .hero-section h2 { font-size: 1.6rem; }
+            .btn-start { padding: 14px 30px; font-size: 1rem; width: 100%; justify-content: center; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .form-actions .btn { width: 100%; justify-content: center; }
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+
+        @media print {
+            .header, .sidebar, .sidebar-overlay, .form-actions, .btn, .quick-tips {
+                display: none !important;
+            }
+            .page { display: block !important; }
+            .page:not(.active) { display: none !important; }
+            .card { box-shadow: none !important; border: 1px solid #ddd !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="water-bg">
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+</div>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+        <i class="fas fa-tint"></i>
+        <h2>Water<span>Wise</span></h2>
+        <button class="sidebar-close" onclick="closeSidebar()"><i class="fas fa-times"></i></button>
+    </div>
+    <nav class="sidebar-menu">
+        <div class="menu-label">القائمة</div>
+        <a href="#" class="active" onclick="navigateTo('home')"><i class="fas fa-home"></i> الرئيسية</a>
+        <a href="#" onclick="navigateTo('family')"><i class="fas fa-users"></i> العائلة</a>
+        <a href="#" onclick="navigateTo('results')"><i class="fas fa-chart-pie"></i> النتائج</a>
+        <a href="#" onclick="navigateTo('reports')"><i class="fas fa-file-alt"></i> التقارير</a>
+        <a href="#" onclick="navigateTo('smart')"><i class="fas fa-brain"></i> الإدارة الذكية</a>
+        <div class="divider"></div>
+        <a href="#" onclick="navigateTo('about')"><i class="fas fa-info-circle"></i> عن التطبيق</a>
+    </nav>
+</aside>
+
+<div class="app-container">
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <div class="logo">
+                <i class="fas fa-tint"></i>
+                <h1>Water<span>Wise</span></h1>
+            </div>
+        </div>
+        <div class="header-right">
+            <span class="date-display" id="currentDate"></span>
+            <button class="menu-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+        </div>
+    </header>
+
+    <!-- ===== HOME PAGE ===== -->
+    <div id="page-home" class="page active">
+        <div class="hero-section">
+            <span class="hero-icon">💧</span>
+            <h2>اعرف استهلاك <span class="highlight">عائلتك</span> للمياه بسهولة</h2>
+            <p>أضف أفراد عائلتك، أدخل أعمارهم، واكتشف متوسط استهلاك المياه المتوقع لكل فرد وإجمالي استهلاك الأسرة مع تقييم ذكي ونصائح مخصصة.</p>
+            <button class="btn-start" onclick="navigateTo('family')">
+                <i class="fas fa-rocket"></i> ابدأ الحساب الآن
+            </button>
+
+            <div class="quick-tips">
+                <div class="quick-tip">
+                    <i class="fas fa-shower"></i>
+                    <div class="tip-text">قلل وقت الاستحمام</div>
+                    <div class="tip-desc">وفر 40 لتر يومياً</div>
+                </div>
+                <div class="quick-tip">
+                    <i class="fas fa-tooth"></i>
+                    <div class="tip-text">أغلق الصنبور</div>
+                    <div class="tip-desc">وفر 8 لتر أثناء تنظيف الأسنان</div>
+                </div>
+                <div class="quick-tip">
+                    <i class="fas fa-wrench"></i>
+                    <div class="tip-text">أصلح التسريبات</div>
+                    <div class="tip-desc">تسريب واحد يهدر 50 لتر يومياً</div>
+                </div>
+                <div class="quick-tip">
+                    <i class="fas fa-hand-sparkles"></i>
+                    <div class="tip-text">حنفيات حساسة</div>
+                    <div class="tip-desc">تقليل التدفق بنسبة 30%</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== FAMILY PAGE ===== -->
+    <div id="page-family" class="page">
+        <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+                <h2 class="card-title"><i class="fas fa-users"></i> أفراد العائلة</h2>
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <label style="font-weight:600; color:var(--gray-600);">عدد الأفراد:</label>
+                    <select id="memberCount" onchange="updateMemberCount()">
+                        <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+                        <option value="4">4</option><option value="5">5</option><option value="6">6</option>
+                        <option value="7">7</option><option value="8">8</option>
+                    </select>
+                </div>
+            </div>
+            <div class="members-grid" id="membersContainer"></div>
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="addMember()"><i class="fas fa-plus-circle"></i> إضافة فرد</button>
+                <button class="btn btn-primary btn-lg" onclick="calculateResults()"><i class="fas fa-calculator"></i> حساب الاستهلاك</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== RESULTS PAGE ===== -->
+    <div id="page-results" class="page">
+        <div id="resultsContainer">
+            <div style="text-align:center; padding:60px 20px; color:var(--gray-400);">
+                <i class="fas fa-chart-pie" style="font-size:4rem; color:var(--primary); display:block; margin-bottom:16px;"></i>
+                <p style="font-size:1.2rem;">قم بحساب استهلاك العائلة أولاً</p>
+                <button class="btn btn-primary" onclick="navigateTo('family')" style="margin-top:16px;"><i class="fas fa-arrow-left"></i> اذهب إلى العائلة</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== REPORTS PAGE ===== -->
+    <div id="page-reports" class="page">
+        <div class="card">
+            <h2 class="card-title"><i class="fas fa-file-alt"></i> التقارير والتحليلات</h2>
+            <div id="reportsContent">
+                <div style="text-align:center; padding:40px; color:var(--gray-400);">
+                    <i class="fas fa-file-alt" style="font-size:3rem; color:var(--primary); display:block; margin-bottom:12px;"></i>
+                    <p>احسب استهلاك العائلة أولاً لعرض التقارير</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== SMART PAGE ===== -->
+    <div id="page-smart" class="page">
+        <div class="card">
+            <h2 class="card-title"><i class="fas fa-brain"></i> الإدارة الذكية</h2>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:14px;">
+                <div class="stat-box" style="cursor:pointer;" onclick="alert('📊 سيتم فتح حاسبة المياه قريباً')">
+                    <i class="fas fa-calculator"></i>
+                    <div class="value">حاسبة</div>
+                    <div class="label">احسب استهلاكك</div>
+                </div>
+                <div class="stat-box" style="cursor:pointer;" onclick="alert('📊 سيتم فتح قراءة العداد قريباً')">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <div class="value">العداد</div>
+                    <div class="label">سجل قراءاتك</div>
+                </div>
+                <div class="stat-box" style="cursor:pointer;" onclick="alert('🔍 سيتم فتح كشف التسريب قريباً')">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div class="value">التسريب</div>
+                    <div class="label">كشف التسريبات</div>
+                </div>
+                <div class="stat-box" style="cursor:pointer;" onclick="alert('💰 سيتم فتح حساب التكلفة قريباً')">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <div class="value">التكلفة</div>
+                    <div class="label">حساب التكلفة</div>
+                </div>
+                <div class="stat-box" style="cursor:pointer;" onclick="alert('🎯 سيتم فتح الأهداف قريباً')">
+                    <i class="fas fa-bullseye"></i>
+                    <div class="value">الأهداف</div>
+                    <div class="label">أهداف التوفير</div>
+                </div>
+                <div class="stat-box" style="cursor:pointer;" onclick="alert('💡 سيتم فتح النصائح قريباً')">
+                    <i class="fas fa-lightbulb"></i>
+                    <div class="value">النصائح</div>
+                    <div class="label">نصائح الترشيد</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== ABOUT PAGE ===== -->
+    <div id="page-about" class="page">
+        <div class="card">
+            <h2 class="card-title"><i class="fas fa-info-circle"></i> عن التطبيق</h2>
+            <div style="text-align:center; padding:20px;">
+                <i class="fas fa-tint" style="font-size:4rem; color:var(--primary);"></i>
+                <h3 style="color:var(--primary-dark); margin:16px 0;">WaterWise 💧</h3>
+                <p style="color:var(--gray-500); max-width:500px; margin:0 auto; line-height:1.8;">نظام ذكي لإدارة وترشيد استهلاك المياه للعائلات. احسب استهلاكك، تتبع أهدافك، ووفر المياه.</p>
+            </div>
+            <div style="margin:24px 0;">
+                <h4 style="color:var(--primary-dark); text-align:center; margin-bottom:16px;">👥 فريق التطوير</h4>
+                <div style="display:flex; gap:20px; flex-wrap:wrap; justify-content:center;">
+                    <div style="text-align:center; padding:20px 24px; background:var(--white); border-radius:var(--border-radius); min-width:120px; border:1px solid rgba(0,0,0,0.04);">
+                        <i class="fas fa-user-circle" style="font-size:3rem; color:var(--primary);"></i>
+                        <div style="font-weight:700; color:var(--gray-800); margin-top:6px;">Code Team</div>
+                        <div style="color:var(--gray-500); font-size:0.85rem;">التطوير والتصميم</div>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align:center; color:var(--gray-400); font-size:0.85rem; padding-top:16px; border-top:1px solid var(--gray-200);">
+                <p>© 2026 WaterWise | جميع الحقوق محفوظة</p>
+                <p>Developed by <strong style="color:var(--primary-dark);">Code Team</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer style="margin-top:40px; padding:20px; text-align:center; color:var(--gray-500); font-size:0.85rem; background:rgba(255,255,255,0.5); border-radius:var(--border-radius-lg);">
+        <p>© 2026 WaterWise | Developed by <strong style="color:var(--primary-dark);">Code Team</strong> 💧</p>
+    </footer>
+</div>
+
+<script>
+    // ============ DATA ============
+    const CONSUMPTION_DATA = {
+        '1-3': { drink: 1, shower: 15, wudu: 0, daily: 10 },
+        '4-6': { drink: 1.5, shower: 25, wudu: 3, daily: 15 },
+        '7-12': { drink: 2, shower: 40, wudu: 5, daily: 20 },
+        '13-17': { drink: 2.5, shower: 55, wudu: 8, daily: 25 },
+        '18-30': { drink: 3, shower: 70, wudu: 10, daily: 35 },
+        '31-50': { drink: 3, shower: 65, wudu: 10, daily: 32 },
+        '51-70': { drink: 2.5, shower: 55, wudu: 8, daily: 28 },
+        '71-100': { drink: 2, shower: 45, wudu: 5, daily: 20 }
+    };
+
+    function getConsumptionByAge(age) {
+        if (age <= 3) return CONSUMPTION_DATA['1-3'];
+        if (age <= 6) return CONSUMPTION_DATA['4-6'];
+        if (age <= 12) return CONSUMPTION_DATA['7-12'];
+        if (age <= 17) return CONSUMPTION_DATA['13-17'];
+        if (age <= 30) return CONSUMPTION_DATA['18-30'];
+        if (age <= 50) return CONSUMPTION_DATA['31-50'];
+        if (age <= 70) return CONSUMPTION_DATA['51-70'];
+        return CONSUMPTION_DATA['71-100'];
+    }
+
+    // ============ STATE ============
+    let members = [{ name: '', age: '' }];
+    let savedResults = JSON.parse(localStorage.getItem('savedResults')) || null;
+    let consumptionHistory = JSON.parse(localStorage.getItem('consumptionHistory')) || [];
+    let chartInstance = null;
+
+    // ============ DOM ============
+    const membersContainer = document.getElementById('membersContainer');
+    const memberCountSelect = document.getElementById('memberCount');
+
+    // ============ DATE ============
+    document.getElementById('currentDate').textContent = new Date().toLocaleDateString('ar-EG', { 
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+    });
+
+    // ============ SIDEBAR ============
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('open');
+        document.getElementById('sidebarOverlay').classList.toggle('active');
+    }
+    function closeSidebar() {
+        document.getElementById('sidebar').classList.remove('open');
+        document.getElementById('sidebarOverlay').classList.remove('active');
+    }
+
+    // ============ NAVIGATION ============
+    function navigateTo(page) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById('page-' + page).classList.add('active');
+        document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
+        const links = document.querySelectorAll('.sidebar-menu a');
+        const map = { home: 0, family: 1, results: 2, reports: 3, smart: 4, about: 5 };
+        if (map[page] !== undefined && links[map[page]]) links[map[page]].classList.add('active');
+        closeSidebar();
+        if (page === 'family') renderMembers();
+        if (page === 'results' && savedResults) displayResults(savedResults);
+        if (page === 'reports') loadReports();
+        if (page === 'home') updateHomeStats();
+    }
+
+    // ============ MEMBERS ============
+    function renderMembers() {
+        membersContainer.innerHTML = '';
+        members.forEach((m, idx) => {
+            const card = document.createElement('div');
+            card.className = 'member-card';
+            card.innerHTML = `
+                <div class="member-header">
+                    <div class="icon"><i class="fas fa-user-circle"></i></div>
+                    <button class="btn btn-danger btn-sm" onclick="deleteMember(${idx})"><i class="fas fa-trash-alt"></i></button>
+                </div>
+                <div class="field-group">
+                    <label>الاسم</label>
+                    <input type="text" placeholder="أدخل الاسم" value="${m.name || ''}" oninput="updateMember(${idx}, 'name', this.value)">
+                </div>
+                <div class="field-group">
+                    <label>العمر</label>
+                    <input type="number" placeholder="من 1 إلى 100" min="1" max="100" value="${m.age || ''}" oninput="updateMember(${idx}, 'age', this.value)">
+                </div>
+            `;
+            membersContainer.appendChild(card);
+        });
+        memberCountSelect.value = members.length;
+    }
+
+    function updateMember(idx, field, value) { members[idx][field] = value; }
+    function addMember() { members.push({ name: '', age: '' }); renderMembers(); }
+    function deleteMember(idx) {
+        if (members.length <= 1) { alert('يجب أن يبقى فرد واحد على الأقل'); return; }
+        members.splice(idx, 1);
+        renderMembers();
+    }
+    function updateMemberCount() {
+        const val = parseInt(memberCountSelect.value);
+        while (members.length < val) members.push({ name: '', age: '' });
+        while (members.length > val && members.length > 1) members.pop();
+        renderMembers();
+    }
+
+    // ============ CALCULATE ============
+    function calculateResults() {
+        for (let i = 0; i < members.length; i++) {
+            const m = members[i];
+            if (!m.name || !m.name.trim()) { alert('الرجاء إدخال اسم الفرد رقم ' + (i + 1)); return; }
+            const age = parseInt(m.age);
+            if (isNaN(age) || age < 1 || age > 100) { alert('العمر يجب أن يكون بين 1 و 100 للفرد ' + (i + 1)); return; }
+        }
+
+        const results = members.map(m => {
+            const age = parseInt(m.age);
+            const data = getConsumptionByAge(age);
+            return {
+                name: m.name.trim(),
+                age: age,
+                drink: data.drink,
+                shower: data.shower,
+                wudu: data.wudu,
+                daily: data.daily,
+                total: data.drink + data.shower + data.wudu + data.daily
+            };
+        });
+
+        const totalDaily = results.reduce((sum, r) => sum + r.total, 0);
+        const monthly = totalDaily * 30;
+        const yearly = totalDaily * 365;
+
+        savedResults = { 
+            results, 
+            totalDaily, 
+            monthly, 
+            yearly, 
+            date: new Date().toISOString().split('T')[0],
+            membersCount: results.length,
+            avgPerPerson: totalDaily / results.length
+        };
+        localStorage.setItem('savedResults', JSON.stringify(savedResults));
+
+        const historyEntry = {
+            date: savedResults.date,
+            totalDaily: totalDaily,
+            members: results.map(r => ({ name: r.name, age: r.age, total: r.total }))
+        };
+        consumptionHistory.push(historyEntry);
+        localStorage.setItem('consumptionHistory', JSON.stringify(consumptionHistory));
+
+        // Navigate to results
+        navigateTo('results');
+        displayResults(savedResults);
+    }
+
+    // ============ DISPLAY RESULTS ============
+    function displayResults(data) {
+        const container = document.getElementById('resultsContainer');
+        
+        // Calculate score
+        const avgDaily = data.totalDaily / data.membersCount;
+        const score = Math.max(0, Math.min(100, 100 - (avgDaily / 3)));
+        const scoreRounded = Math.round(score);
+        
+        let scoreText = '';
+        let scoreSub = '';
+        if (scoreRounded > 80) {
+            scoreText = 'ممتاز جداً! 🌟';
+            scoreSub = 'أنت توفر المياه بشكل ممتاز مقارنة بالهدف الشهري';
+        } else if (scoreRounded > 60) {
+            scoreText = 'جيد جداً 👍';
+            scoreSub = 'استمر في الترشيد وحافظ على هذه النسبة';
+        } else if (scoreRounded > 40) {
+            scoreText = 'متوسط 📊';
+            scoreSub = 'يمكنك تحسين استهلاكك أكثر';
+        } else {
+            scoreText = 'بحاجة للتحسين ⚠️';
+            scoreSub = 'ننصح بمراجعة عادات استهلاك المياه';
+        }
+
+        let html = `
+            <!-- Score -->
+            <div class="result-score">
+                <div class="score-label">💧 تقييم استهلاك العائلة</div>
+                <div class="score-number">${scoreRounded}</div>
+                <div class="score-label">${scoreText}</div>
+                <div class="score-sub">${scoreSub}</div>
+            </div>
+
+            <!-- Stats -->
+            <div class="card">
+                <h3 class="card-title"><i class="fas fa-chart-simple"></i> إحصائيات الاستهلاك</h3>
+                <div class="stats-grid">
+                    <div class="stat-box"><i class="fas fa-users"></i><div class="value">${data.membersCount}</div><div class="label">عدد الأفراد</div></div>
+                    <div class="stat-box"><i class="fas fa-tint"></i><div class="value">${data.totalDaily}</div><div class="label">الاستهلاك اليومي (لتر)</div></div>
+                    <div class="stat-box"><i class="fas fa-calendar-month"></i><div class="value">${data.monthly.toLocaleString()}</div><div class="label">الاستهلاك الشهري (لتر)</div></div>
+                    <div class="stat-box"><i class="fas fa-calendar-year"></i><div class="value">${data.yearly.toLocaleString()}</div><div class="label">الاستهلاك السنوي (لتر)</div></div>
+                    <div class="stat-box"><i class="fas fa-user"></i><div class="value">${data.avgPerPerson.toFixed(1)}</div><div class="label">متوسط الفرد (لتر)</div></div>
+                    <div class="stat-box"><i class="fas fa-money-bill-wave"></i><div class="value">${(data.totalDaily * 0.05).toFixed(2)}</div><div class="label">التكلفة اليومية (ج.م)</div></div>
+                </div>
+            </div>
+
+            <!-- Family Comparison -->
+            <div class="card">
+                <h3 class="card-title"><i class="fas fa-chart-bar"></i> مقارنة استهلاك العائلة</h3>
+                <div id="comparisonContainer">
+        `;
+
+        const sorted = [...data.results].sort((a, b) => b.total - a.total);
+        const maxVal = sorted.length > 0 ? sorted[0].total : 1;
+        sorted.forEach((r, i) => {
+            const pct = (r.total / maxVal * 100);
+            const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i+1}.`;
+            html += `
+                <div class="compare-item">
+                    <span class="name">${medal} ${r.name}</span>
+                    <div class="bar"><div class="fill" style="width:${pct}%;"></div></div>
+                    <span class="value">${r.total} لتر</span>
+                </div>
+            `;
+        });
+
+        html += `
+                </div>
+            </div>
+
+            <!-- Chart -->
+            <div class="card">
+                <h3 class="card-title"><i class="fas fa-chart-pie"></i> توزيع الاستهلاك</h3>
+                <div class="chart-container"><canvas id="resultsChart"></canvas></div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:16px;">
+                <button class="btn btn-primary" onclick="navigateTo('reports')"><i class="fas fa-file-alt"></i> عرض التقارير</button>
+                <button class="btn btn-secondary" onclick="navigateTo('family')"><i class="fas fa-users"></i> تعديل العائلة</button>
+                <button class="btn btn-success" onclick="window.print()"><i class="fas fa-print"></i> طباعة النتائج</button>
+            </div>
+        `;
+
+        container.innerHTML = html;
+
+        // Chart
+        setTimeout(() => {
+            const ctx = document.getElementById('resultsChart').getContext('2d');
+            if (chartInstance) chartInstance.destroy();
+            const labels = data.results.map(r => r.name);
+            const values = data.results.map(r => r.total);
+            chartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: ['#0077b6', '#48cae4', '#90e0ef', '#00b4d8', '#023e8a', '#0096c7'],
+                        borderWidth: 3,
+                        borderColor: '#fff',
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    animation: { duration: 1200, easing: 'easeOutBounce' },
+                    plugins: {
+                        legend: { position: 'bottom', labels: { padding: 16, usePointStyle: true } }
+                    }
+                }
+            });
+        }, 300);
+    }
+
+    // ============ REPORTS ============
+    function loadReports() {
+        const container = document.getElementById('reportsContent');
+        const history = consumptionHistory;
+        
+        if (history.length === 0) {
+            container.innerHTML = `
+                <div style="text-align:center; padding:40px; color:var(--gray-400);">
+                    <i class="fas fa-file-alt" style="font-size:3rem; color:var(--primary); display:block; margin-bottom:12px;"></i>
+                    <p>لا توجد بيانات لعرض التقارير</p>
+                    <button class="btn btn-primary" onclick="navigateTo('family')" style="margin-top:12px;"><i class="fas fa-arrow-left"></i> احسب استهلاكك</button>
+                </div>
+            `;
+            return;
+        }
+
+        // Calculate totals
+        const total = history.reduce((s, h) => s + h.totalDaily, 0);
+        const avg = total / history.length;
+        const last7 = history.slice(-7);
+        const weekTotal = last7.reduce((s, h) => s + h.totalDaily, 0);
+        const last30 = history.slice(-30);
+        const monthTotal = last30.reduce((s, h) => s + h.totalDaily, 0);
+
+        let html = `
+            <div class="stats-grid">
+                <div class="stat-box"><i class="fas fa-calendar-day"></i><div class="value">${avg.toFixed(0)}</div><div class="label">المتوسط اليومي</div></div>
+                <div class="stat-box"><i class="fas fa-calendar-week"></i><div class="value">${weekTotal.toFixed(0)}</div><div class="label">استهلاك الأسبوع</div></div>
+                <div class="stat-box"><i class="fas fa-calendar-month"></i><div class="value">${monthTotal.toFixed(0)}</div><div class="label">استهلاك الشهر</div></div>
+                <div class="stat-box"><i class="fas fa-calendar-year"></i><div class="value">${(monthTotal * 12).toFixed(0)}</div><div class="label">استهلاك السنة (تقديري)</div></div>
+            </div>
+            <div class="chart-container"><canvas id="reportChart"></canvas></div>
+            <div style="margin-top:16px;">
+                <h4 style="color:var(--primary-dark); margin-bottom:10px;">📋 سجل الاستهلاك اليومي</h4>
+        `;
+
+        history.slice(-10).reverse().forEach(h => {
+            html += `
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; border-bottom:1px solid var(--gray-100);">
+                    <span style="font-weight:600; color:var(--gray-700);">${h.date}</span>
+                    <span style="font-weight:700; color:var(--primary);">${h.totalDaily} لتر</span>
+                    <span style="color:var(--gray-400); font-size:0.85rem;">👤 ${h.members ? h.members.length : 0} أفراد</span>
+                </div>
+            `;
+        });
+
+        html += `</div>`;
+        container.innerHTML = html;
+
+        // Chart
+        setTimeout(() => {
+            const ctx = document.getElementById('reportChart').getContext('2d');
+            if (window.reportChartInstance) window.reportChartInstance.destroy();
+            const labels = history.slice(-14).map(h => h.date);
+            const data = history.slice(-14).map(h => h.totalDaily);
+            if (labels.length > 0) {
+                window.reportChartInstance = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'الاستهلاك اليومي (لتر)',
+                            data: data,
+                            backgroundColor: 'rgba(0, 119, 182, 0.6)',
+                            borderColor: '#0077b6',
+                            borderWidth: 2,
+                            borderRadius: 8,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        animation: { duration: 800 },
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } }, x: { grid: { display: false } } }
+                    }
+                });
+            }
+        }, 300);
+    }
+
+    // ============ HOME STATS ============
+    function updateHomeStats() {
+        // Update quick tips with dynamic data if available
+        if (savedResults) {
+            const tips = document.querySelectorAll('.quick-tip');
+            if (tips.length >= 4) {
+                tips[0].querySelector('.tip-desc').textContent = `وفر ${(savedResults.totalDaily * 0.2).toFixed(0)} لتر يومياً`;
+                tips[1].querySelector('.tip-desc').textContent = `وفر ${(savedResults.totalDaily * 0.1).toFixed(0)} لتر`;
+            }
+        }
+    }
+
+    // ============ INIT ============
+    renderMembers();
+    updateHomeStats();
+    if (savedResults) {
+        // Pre-load results if they exist
+        const container = document.getElementById('resultsContainer');
+        container.innerHTML = `
+            <div style="text-align:center; padding:40px; color:var(--gray-400);">
+                <i class="fas fa-check-circle" style="font-size:3rem; color:var(--success); display:block; margin-bottom:12px;"></i>
+                <p style="font-size:1.1rem; color:var(--gray-700);">لديك نتائج محفوظة بتاريخ ${savedResults.date}</p>
+                <button class="btn btn-primary" onclick="displayResults(savedResults)" style="margin-top:12px;"><i class="fas fa-chart-pie"></i> عرض النتائج</button>
+            </div>
+        `;
+    }
+
+    console.log('💧 WaterWise - نظام ترشيد المياه المتكامل');
+    console.log('👥 Developed by Code Team');
+    console.log('📊 5 صفحات رئيسية مع تجربة مستخدم سلسة');
+</script>
+</body>
+</html>
