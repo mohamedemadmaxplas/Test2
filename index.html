@@ -647,6 +647,265 @@
             .page:not(.active) { display: none !important; }
             .card { box-shadow: none !important; border: 1px solid #ddd !important; }
         }
+        /* ===== HEADER RESPONSIVE ===== */
+.header {
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(16px);
+    border-radius: var(--border-radius-lg);
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow);
+    margin-bottom: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    position: sticky;
+    top: 12px;
+    z-index: 50;
+    min-height: 60px;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 0; /* يمنع الفائض */
+}
+
+.header-left .logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.header-left .logo i {
+    font-size: 1.6rem;
+    color: var(--primary);
+    animation: waterDrop 3s infinite;
+    flex-shrink: 0;
+}
+
+.header-left .logo h1 {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--primary-dark);
+    white-space: nowrap;
+}
+
+.header-left .logo h1 span {
+    color: var(--primary);
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.header-right .date-display {
+    color: var(--gray-500);
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 4px 12px;
+    background: var(--gray-50);
+    border-radius: 50px;
+    border: 1px solid var(--gray-200);
+    white-space: nowrap;
+    display: none; /* مخفي بشكل افتراضي */
+}
+
+.header-right .menu-btn {
+    font-size: 1.3rem;
+    cursor: pointer;
+    color: var(--primary-dark);
+    transition: var(--transition);
+    background: none;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.header-right .menu-btn:hover {
+    background: var(--primary-light);
+    transform: scale(1.05);
+}
+
+/* ===== RESPONSIVE HEADER ===== */
+@media (max-width: 768px) {
+    .header {
+        padding: 10px 14px;
+        margin-bottom: 16px;
+        top: 8px;
+        border-radius: var(--border-radius);
+        min-height: 52px;
+        gap: 6px;
+    }
+    
+    .header-left .logo i {
+        font-size: 1.3rem;
+    }
+    
+    .header-left .logo h1 {
+        font-size: 1rem;
+    }
+    
+    .header-right .date-display {
+        font-size: 0.7rem;
+        padding: 3px 10px;
+        display: inline-block; /* يظهر في التابلت */
+    }
+    
+    .header-right .menu-btn {
+        font-size: 1.1rem;
+        width: 32px;
+        height: 32px;
+    }
+}
+
+@media (max-width: 480px) {
+    .header {
+        padding: 8px 12px;
+        margin-bottom: 12px;
+        top: 4px;
+        border-radius: 12px;
+        min-height: 44px;
+        gap: 4px;
+    }
+    
+    .header-left .logo i {
+        font-size: 1.1rem;
+    }
+    
+    .header-left .logo h1 {
+        font-size: 0.85rem;
+    }
+    
+    .header-left .logo h1 span {
+        font-size: 0.85rem;
+    }
+    
+    .header-right .date-display {
+        font-size: 0.6rem;
+        padding: 2px 8px;
+        display: none; /* مخفي في الموبايل الصغير */
+    }
+    
+    .header-right .menu-btn {
+        font-size: 1rem;
+        width: 28px;
+        height: 28px;
+    }
+}
+
+@media (max-width: 380px) {
+    .header {
+        padding: 6px 10px;
+        min-height: 38px;
+        border-radius: 10px;
+    }
+    
+    .header-left .logo i {
+        font-size: 0.95rem;
+    }
+    
+    .header-left .logo h1 {
+        font-size: 0.75rem;
+    }
+    
+    .header-left .logo h1 span {
+        font-size: 0.75rem;
+    }
+    
+    .header-right .menu-btn {
+        font-size: 0.9rem;
+        width: 26px;
+        height: 26px;
+    }
+}
+/* ===== SIDEBAR RESPONSIVE ===== */
+.sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 280px;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(24px);
+    box-shadow: -8px 0 40px rgba(0, 0, 0, 0.08);
+    transform: translateX(100%);
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 1000;
+    overflow-y: auto;
+    border-left: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+@media (max-width: 480px) {
+    .sidebar {
+        width: 260px;
+    }
+    
+    .sidebar-brand {
+        padding: 16px 20px;
+    }
+    
+    .sidebar-brand i {
+        font-size: 1.5rem;
+    }
+    
+    .sidebar-brand h2 {
+        font-size: 1.1rem;
+    }
+    
+    .sidebar-menu a {
+        padding: 10px 18px;
+        font-size: 0.85rem;
+        gap: 10px;
+    }
+    
+    .sidebar-menu a i {
+        font-size: 0.95rem;
+        width: 18px;
+    }
+    
+    .sidebar-menu .menu-label {
+        padding: 12px 20px 6px;
+        font-size: 0.6rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .sidebar {
+        width: 230px;
+    }
+    
+    .sidebar-brand {
+        padding: 12px 16px;
+    }
+    
+    .sidebar-brand i {
+        font-size: 1.2rem;
+    }
+    
+    .sidebar-brand h2 {
+        font-size: 0.95rem;
+    }
+    
+    .sidebar-menu a {
+        padding: 8px 14px;
+        font-size: 0.8rem;
+        gap: 8px;
+    }
+}
     </style>
 </head>
 <body>
@@ -730,30 +989,84 @@
         </div>
     </div>
 
-    <!-- ===== FAMILY PAGE ===== -->
-    <div id="page-family" class="page">
-        <div class="card">
-            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
-                <h2 class="card-title"><i class="fas fa-users"></i> أفراد العائلة</h2>
-                <div style="display:flex; gap:10px; align-items:center;">
-                    <label style="font-weight:600; color:var(--gray-600);">عدد الأفراد:</label>
-                    <select id="memberCount" onchange="updateMemberCount()">
-                        <option value="1">1</option><option value="2">2</option><option value="3">3</option>
-                        <option value="4">4</option><option value="5">5</option><option value="6">6</option>
-                        <option value="7">7</option><option value="8">8</option>
-                    </select>
-                </div>
+   <!-- ===== FAMILY PAGE ===== -->
+<div id="page-family" class="page">
+    <div class="card">
+        <h2 class="card-title"><i class="fas fa-users"></i> إدارة العائلات</h2>
+        
+        <!-- إضافة عائلة جديدة -->
+        <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 20px; background: var(--gray-50); padding: 16px; border-radius: var(--border-radius);">
+            <div style="flex: 1; min-width: 200px;">
+                <label style="font-weight: 600; color: var(--gray-600); display: block; margin-bottom: 4px;">🏠 اسم العائلة</label>
+                <input type="text" id="familyNameInput" placeholder="مثال: عائلة محمد" style="width: 100%; padding: 10px 14px; border: 2px solid var(--gray-200); border-radius: 10px; font-size: 0.95rem;">
             </div>
-            <div class="members-grid" id="membersContainer"></div>
-            <div class="form-actions">
-                <button class="btn btn-secondary" onclick="addMember()"><i class="fas fa-plus-circle"></i> إضافة فرد</button>
-                <button class="btn btn-primary btn-lg" onclick="calculateResults()"><i class="fas fa-calculator"></i> حساب الاستهلاك</button>
+            <button class="btn btn-primary" onclick="addNewFamily()" style="margin-top: 20px;">
+                <i class="fas fa-plus-circle"></i> إضافة عائلة
+            </button>
+        </div>
+
+        <!-- فلتر العائلات -->
+        <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 16px;">
+            <label style="font-weight: 600; color: var(--gray-600);">📋 اختر العائلة:</label>
+            <select id="familyFilter" onchange="selectFamily(this.value)" style="padding: 8px 16px; border: 2px solid var(--gray-200); border-radius: 10px; font-size: 0.95rem; background: var(--white); min-width: 180px;">
+                <option value="">-- اختر عائلة --</option>
+            </select>
+            <button class="btn btn-danger btn-sm" onclick="deleteSelectedFamily()" style="margin-right: auto;">
+                <i class="fas fa-trash-alt"></i> حذف العائلة
+            </button>
+        </div>
+
+        <!-- منطقة إضافة الأعضاء -->
+        <div id="membersArea" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 12px;">
+                <h3 style="color: var(--primary-dark);"><i class="fas fa-user-plus"></i> أفراد العائلة: <span id="currentFamilyNameDisplay" style="color: var(--primary);"></span></h3>
+                <button class="btn btn-secondary btn-sm" onclick="addMemberRow()"><i class="fas fa-plus-circle"></i> إضافة عضو</button>
+            </div>
+
+            <!-- جدول الأعضاء -->
+            <div style="overflow-x: auto; margin-bottom: 16px;">
+                <table style="width: 100%; border-collapse: collapse; background: var(--white); border-radius: var(--border-radius); overflow: hidden; box-shadow: var(--shadow);">
+                    <thead style="background: var(--primary-gradient); color: var(--white);">
+                        <tr>
+                            <th style="padding: 12px 16px; text-align: right;">#</th>
+                            <th style="padding: 12px 16px; text-align: right;">الاسم</th>
+                            <th style="padding: 12px 16px; text-align: right;">العمر</th>
+                            <th style="padding: 12px 16px; text-align: center;">إجراء</th>
+                        </tr>
+                    </thead>
+                    <tbody id="membersTableBody">
+                        <!-- سيتم إضافة الصفوف هنا ديناميكياً -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                <button class="btn btn-success btn-lg" onclick="saveCurrentFamily()"><i class="fas fa-save"></i> حفظ العائلة</button>
+                <button class="btn btn-secondary" onclick="clearMembersForm()"><i class="fas fa-undo"></i> إعادة تعيين</button>
             </div>
         </div>
-    </div>
 
-    <!-- ===== RESULTS PAGE ===== -->
-    <div id="page-results" class="page">
+        <!-- عرض العائلات المحفوظة -->
+        <div id="savedFamiliesList" style="margin-top: 20px; padding-top: 20px; border-top: 2px dashed var(--gray-200);">
+            <h3 style="color: var(--primary-dark); margin-bottom: 12px;"><i class="fas fa-folder-open"></i> العائلات المحفوظة</h3>
+            <div id="familiesContainer"></div>
+        </div>
+    </div>
+</div>
+
+   <!-- ===== RESULTS PAGE ===== -->
+<div id="page-results" class="page">
+    <div class="card">
+        <h2 class="card-title"><i class="fas fa-chart-pie"></i> نتائج الاستهلاك</h2>
+        
+        <!-- فلتر العائلات -->
+        <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 20px;">
+            <label style="font-weight: 600; color: var(--gray-600);">اختر العائلة:</label>
+            <select id="resultsFamilyFilter" onchange="displayFamilyResults(this.value)" style="padding: 8px 16px; border: 2px solid var(--gray-200); border-radius: 10px; font-size: 0.95rem; background: var(--white); min-width: 200px;">
+                <option value="">-- اختر عائلة --</option>
+            </select>
+        </div>
+
         <div id="resultsContainer">
             <div style="text-align:center; padding:60px 20px; color:var(--gray-400);">
                 <i class="fas fa-chart-pie" style="font-size:4rem; color:var(--primary); display:block; margin-bottom:16px;"></i>
@@ -762,19 +1075,32 @@
             </div>
         </div>
     </div>
+</div>
 
     <!-- ===== REPORTS PAGE ===== -->
-    <div id="page-reports" class="page">
-        <div class="card">
-            <h2 class="card-title"><i class="fas fa-file-alt"></i> التقارير والتحليلات</h2>
-            <div id="reportsContent">
-                <div style="text-align:center; padding:40px; color:var(--gray-400);">
-                    <i class="fas fa-file-alt" style="font-size:3rem; color:var(--primary); display:block; margin-bottom:12px;"></i>
-                    <p>احسب استهلاك العائلة أولاً لعرض التقارير</p>
-                </div>
+<div id="page-reports" class="page">
+    <div class="card">
+        <h2 class="card-title"><i class="fas fa-file-alt"></i> التقارير والتحليلات</h2>
+        
+        <!-- فلتر العائلات -->
+        <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 20px;">
+            <label style="font-weight: 600; color: var(--gray-600);">اختر العائلة:</label>
+            <select id="reportsFamilyFilter" onchange="loadFamilyReport(this.value)" style="padding: 8px 16px; border: 2px solid var(--gray-200); border-radius: 10px; font-size: 0.95rem; background: var(--white); min-width: 200px;">
+                <option value="">-- اختر عائلة --</option>
+            </select>
+            <button class="btn btn-primary" onclick="loadFamilyReport(document.getElementById('reportsFamilyFilter').value)">
+                <i class="fas fa-file-alt"></i> عرض التقرير
+            </button>
+        </div>
+
+        <div id="reportsContent">
+            <div style="text-align:center; padding:40px; color:var(--gray-400);">
+                <i class="fas fa-file-alt" style="font-size:3rem; color:var(--primary); display:block; margin-bottom:12px;"></i>
+                <p>اختر عائلة لعرض التقرير</p>
             </div>
         </div>
     </div>
+</div>
 
     <!-- ===== SMART PAGE ===== -->
     <div id="page-smart" class="page">
@@ -840,11 +1166,19 @@
             </div>
         </div>
     </div>
-    <!-- ===== METER PAGE (العداد) ===== -->
+   <!-- ===== METER PAGE (العداد) ===== -->
 <div id="page-meter" class="page">
     <div class="card">
         <h2 class="card-title"><i class="fas fa-tachometer-alt"></i> قراءة العداد</h2>
         
+        <!-- فلتر العائلات -->
+        <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 20px;">
+            <label style="font-weight: 600; color: var(--gray-600);">اختر العائلة:</label>
+            <select id="meterFamilyFilter" onchange="selectMeterFamily(this.value)" style="padding: 8px 16px; border: 2px solid var(--gray-200); border-radius: 10px; font-size: 0.95rem; background: var(--white); min-width: 200px;">
+                <option value="">-- اختر عائلة --</option>
+            </select>
+        </div>
+
         <!-- خيارات الإدخال -->
         <div style="margin-bottom: 24px;">
             <label style="font-weight: 600; color: var(--gray-600); display: block; margin-bottom: 8px;">اختر طريقة الإدخال:</label>
@@ -1155,6 +1489,14 @@
             📊 احسب استهلاكك اليومي والشهري والسنوي للمياه وقدّر التكلفة بدقة
         </p>
 
+        <!-- فلتر العائلات -->
+        <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 20px;">
+            <label style="font-weight: 600; color: var(--gray-600);">اختر العائلة:</label>
+            <select id="calculatorFamilyFilter" onchange="loadFamilyToCalculator(this.value)" style="padding: 8px 16px; border: 2px solid var(--gray-200); border-radius: 10px; font-size: 0.95rem; background: var(--white); min-width: 200px;">
+                <option value="">-- اختر عائلة --</option>
+            </select>
+        </div>
+
         <!-- حقل إدخال عدد الأفراد -->
         <div style="margin-bottom: 20px;">
             <label style="font-weight: 600; color: var(--gray-600); display: block; margin-bottom: 8px;">👨‍👩‍👧‍👦 عدد أفراد الأسرة</label>
@@ -1306,6 +1648,694 @@
         document.getElementById('sidebar').classList.remove('open');
         document.getElementById('sidebarOverlay').classList.remove('active');
     }
+
+
+    // =============================================
+// ============ FAMILIES SYSTEM ================
+// =============================================
+
+let families = JSON.parse(localStorage.getItem('families')) || [];
+let currentFamilyId = null;
+let editingMembers = [];
+
+// --- دالة لجلب العائلة النشطة ---
+function getCurrentFamily() {
+    return families.find(f => f.id === currentFamilyId) || null;
+}
+
+// --- عرض قائمة العائلات في كل الفلاتر ---
+function updateAllFamilyFilters() {
+    const filters = ['familyFilter', 'resultsFamilyFilter', 'reportsFamilyFilter', 'meterFamilyFilter', 'calculatorFamilyFilter'];
+    filters.forEach(id => {
+        const select = document.getElementById(id);
+        if (!select) return;
+        const currentVal = select.value;
+        select.innerHTML = '<option value="">-- اختر عائلة --</option>';
+        families.forEach(f => {
+            const option = document.createElement('option');
+            option.value = f.id;
+            option.textContent = f.name;
+            select.appendChild(option);
+        });
+        if (currentVal && families.some(f => f.id === currentVal)) {
+            select.value = currentVal;
+        }
+    });
+    updateFamiliesList();
+}
+
+// --- عرض العائلات المحفوظة ---
+function updateFamiliesList() {
+    const container = document.getElementById('familiesContainer');
+    if (!container) return;
+    if (families.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--gray-400);">
+            <i class="fas fa-users" style="font-size:2rem; display:block; margin-bottom:8px;"></i>
+            <p>لا توجد عائلات محفوظة</p>
+        </div>`;
+        return;
+    }
+    let html = `<div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(220px,1fr)); gap:12px;">`;
+    families.forEach(f => {
+        const memberCount = f.members ? f.members.length : 0;
+        html += `
+            <div style="background:var(--white); padding:14px 18px; border-radius:var(--border-radius); border:1px solid var(--gray-200); box-shadow:var(--shadow);">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-weight:700; color:var(--primary-dark);">🏠 ${f.name}</span>
+                    <span style="font-size:0.8rem; color:var(--gray-400);">${memberCount} أفراد</span>
+                </div>
+                <div style="font-size:0.85rem; color:var(--gray-500); margin-top:4px;">
+                    📅 ${f.date || 'تاريخ غير محدد'}
+                </div>
+                <div style="margin-top:8px; display:flex; gap:6px; flex-wrap:wrap;">
+                    <button class="btn btn-primary btn-sm" onclick="selectFamily('${f.id}')"><i class="fas fa-edit"></i> تعديل</button>
+                    <button class="btn btn-success btn-sm" onclick="viewFamilyResults('${f.id}')"><i class="fas fa-chart-pie"></i> نتائج</button>
+                </div>
+            </div>
+        `;
+    });
+    html += `</div>`;
+    container.innerHTML = html;
+}
+
+// --- إضافة عائلة جديدة ---
+function addNewFamily() {
+    const nameInput = document.getElementById('familyNameInput');
+    const name = nameInput.value.trim();
+    if (!name) {
+        alert('الرجاء إدخال اسم العائلة');
+        return;
+    }
+    if (families.some(f => f.name === name)) {
+        alert('هذه العائلة موجودة بالفعل');
+        return;
+    }
+    const newFamily = {
+        id: Date.now().toString(),
+        name: name,
+        date: new Date().toISOString().split('T')[0],
+        members: [],
+        consumptionHistory: []
+    };
+    families.push(newFamily);
+    localStorage.setItem('families', JSON.stringify(families));
+    nameInput.value = '';
+    updateAllFamilyFilters();
+    selectFamily(newFamily.id);
+    alert(`✅ تم إضافة "${name}" بنجاح!`);
+}
+
+// --- اختيار عائلة للتحرير ---
+function selectFamily(familyId) {
+    if (!familyId) {
+        document.getElementById('membersArea').style.display = 'none';
+        currentFamilyId = null;
+        return;
+    }
+    const family = families.find(f => f.id === familyId);
+    if (!family) return;
+    currentFamilyId = familyId;
+    document.getElementById('membersArea').style.display = 'block';
+    document.getElementById('currentFamilyNameDisplay').textContent = family.name;
+    document.getElementById('familyFilter').value = familyId;
+    
+    // تحميل الأعضاء
+    editingMembers = family.members ? family.members.map(m => ({...m})) : [];
+    renderMembersTable();
+}
+
+// --- عرض جدول الأعضاء ---
+function renderMembersTable() {
+    const tbody = document.getElementById('membersTableBody');
+    if (!tbody) return;
+    if (editingMembers.length === 0) {
+        editingMembers.push({ name: '', age: '' });
+    }
+    let html = '';
+    editingMembers.forEach((m, idx) => {
+        html += `
+            <tr style="border-bottom: 1px solid var(--gray-100);">
+                <td style="padding: 8px 12px; text-align: center; color: var(--gray-500);">${idx + 1}</td>
+                <td style="padding: 8px 12px;">
+                    <input type="text" value="${m.name || ''}" placeholder="أدخل الاسم" 
+                        style="width:100%; padding:6px 10px; border:2px solid var(--gray-200); border-radius:8px; font-size:0.9rem;"
+                        onchange="updateMemberField(${idx}, 'name', this.value)">
+                </td>
+                <td style="padding: 8px 12px;">
+                    <input type="number" value="${m.age || ''}" placeholder="العمر" min="1" max="100"
+                        style="width:100%; padding:6px 10px; border:2px solid var(--gray-200); border-radius:8px; font-size:0.9rem;"
+                        onchange="updateMemberField(${idx}, 'age', this.value)">
+                </td>
+                <td style="padding: 8px 12px; text-align: center;">
+                    <button class="btn btn-danger btn-sm" onclick="removeMemberRow(${idx})"><i class="fas fa-trash-alt"></i></button>
+                </td>
+            </tr>
+        `;
+    });
+    tbody.innerHTML = html;
+}
+
+// --- تحديث حقل عضو ---
+function updateMemberField(idx, field, value) {
+    if (editingMembers[idx]) {
+        editingMembers[idx][field] = value;
+    }
+}
+
+// --- إضافة صف عضو جديد ---
+function addMemberRow() {
+    editingMembers.push({ name: '', age: '' });
+    renderMembersTable();
+}
+
+// --- حذف صف عضو ---
+function removeMemberRow(idx) {
+    if (editingMembers.length <= 1) {
+        alert('يجب أن يبقى فرد واحد على الأقل');
+        return;
+    }
+    editingMembers.splice(idx, 1);
+    renderMembersTable();
+}
+
+// --- حفظ العائلة الحالية ---
+function saveCurrentFamily() {
+    if (!currentFamilyId) {
+        alert('الرجاء اختيار عائلة أولاً');
+        return;
+    }
+    const family = families.find(f => f.id === currentFamilyId);
+    if (!family) return;
+
+    // التحقق من صحة البيانات
+    for (let i = 0; i < editingMembers.length; i++) {
+        const m = editingMembers[i];
+        if (!m.name || !m.name.trim()) {
+            alert(`الرجاء إدخال اسم العضو رقم ${i + 1}`);
+            return;
+        }
+        const age = parseInt(m.age);
+        if (isNaN(age) || age < 1 || age > 100) {
+            alert(`العمر يجب أن يكون بين 1 و 100 للعضو ${m.name}`);
+            return;
+        }
+    }
+
+    // حفظ الأعضاء
+    family.members = editingMembers.map(m => ({
+        name: m.name.trim(),
+        age: parseInt(m.age)
+    }));
+
+    // حساب الاستهلاك
+    const results = family.members.map(m => {
+        const data = getConsumptionByAge(m.age);
+        return {
+            name: m.name,
+            age: m.age,
+            drink: data.drink,
+            shower: data.shower,
+            wudu: data.wudu,
+            daily: data.daily,
+            total: data.drink + data.shower + data.wudu + data.daily
+        };
+    });
+
+    family.results = results;
+    family.totalDaily = results.reduce((sum, r) => sum + r.total, 0);
+    family.monthly = family.totalDaily * 30;
+    family.yearly = family.totalDaily * 365;
+    family.avgPerPerson = family.totalDaily / results.length;
+    family.lastUpdate = new Date().toISOString().split('T')[0];
+
+    // حفظ في localStorage
+    localStorage.setItem('families', JSON.stringify(families));
+    updateAllFamilyFilters();
+    updateFamiliesList();
+
+    alert(`✅ تم حفظ "${family.name}" بنجاح!`);
+}
+
+// ===== تحسين عرض التاريخ في الهيدر حسب حجم الشاشة =====
+function updateDateDisplay() {
+    const dateElement = document.getElementById('currentDate');
+    if (!dateElement) return;
+    
+    const width = window.innerWidth;
+    const date = new Date();
+    let dateStr = '';
+    
+    if (width < 480) {
+        // موبايل صغير: عرض مختصر جداً
+        dateStr = date.toLocaleDateString('ar-EG', { 
+            weekday: 'short', 
+            day: 'numeric',
+            month: 'short'
+        });
+    } else if (width < 768) {
+        // تابلت: عرض متوسط
+        dateStr = date.toLocaleDateString('ar-EG', { 
+            weekday: 'short', 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric' 
+        });
+    } else {
+        // ديسكتوب: عرض كامل
+        dateStr = date.toLocaleDateString('ar-EG', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
+    }
+    
+    dateElement.textContent = dateStr;
+}
+
+// استدعاء عند تحميل الصفحة وعند تغيير حجم الشاشة
+window.addEventListener('load', updateDateDisplay);
+window.addEventListener('resize', updateDateDisplay);
+
+// --- حذف العائلة المختارة ---
+function deleteSelectedFamily() {
+    const familyId = document.getElementById('familyFilter').value;
+    if (!familyId) {
+        alert('الرجاء اختيار عائلة للحذف');
+        return;
+    }
+    const family = families.find(f => f.id === familyId);
+    if (!family) return;
+    if (!confirm(`هل تريد حذف "${family.name}" نهائياً؟`)) return;
+    families = families.filter(f => f.id !== familyId);
+    localStorage.setItem('families', JSON.stringify(families));
+    document.getElementById('membersArea').style.display = 'none';
+    currentFamilyId = null;
+    updateAllFamilyFilters();
+    updateFamiliesList();
+    alert(`🗑️ تم حذف "${family.name}"`);
+}
+
+// --- إعادة تعيين نموذج الأعضاء ---
+function clearMembersForm() {
+    if (!confirm('هل تريد إعادة تعيين جميع الحقول؟')) return;
+    editingMembers = [{ name: '', age: '' }];
+    renderMembersTable();
+}
+
+// --- عرض نتائج عائلة معينة ---
+function viewFamilyResults(familyId) {
+    const family = families.find(f => f.id === familyId);
+    if (!family) return;
+    document.getElementById('resultsFamilyFilter').value = familyId;
+    navigateTo('results');
+    displayFamilyResults(familyId);
+}
+
+// --- عرض نتائج العائلة ---
+function displayFamilyResults(familyId) {
+    const container = document.getElementById('resultsContainer');
+    if (!familyId) {
+        container.innerHTML = `<div style="text-align:center; padding:60px 20px; color:var(--gray-400);">
+            <i class="fas fa-chart-pie" style="font-size:4rem; color:var(--primary); display:block; margin-bottom:16px;"></i>
+            <p style="font-size:1.2rem;">الرجاء اختيار عائلة لعرض النتائج</p>
+        </div>`;
+        return;
+    }
+    const family = families.find(f => f.id === familyId);
+    if (!family || !family.results || family.results.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding:60px 20px; color:var(--gray-400);">
+            <i class="fas fa-info-circle" style="font-size:3rem; color:var(--warning); display:block; margin-bottom:16px;"></i>
+            <p style="font-size:1.2rem;">لا توجد نتائج محفوظة لهذه العائلة</p>
+            <button class="btn btn-primary" onclick="navigateTo('family')" style="margin-top:12px;">
+                <i class="fas fa-arrow-left"></i> اذهب إلى العائلة
+            </button>
+        </div>`;
+        return;
+    }
+
+    const data = family;
+    const avgDaily = data.totalDaily / data.members.length;
+    const score = Math.max(0, Math.min(100, 100 - (avgDaily / 3)));
+    const scoreRounded = Math.round(score);
+    
+    let scoreText = scoreRounded > 80 ? 'ممتاز جداً! 🌟' : scoreRounded > 60 ? 'جيد جداً 👍' : scoreRounded > 40 ? 'متوسط 📊' : 'بحاجة للتحسين ⚠️';
+    let scoreSub = scoreRounded > 80 ? 'أنت توفر المياه بشكل ممتاز' : scoreRounded > 60 ? 'استمر في الترشيد' : scoreRounded > 40 ? 'يمكنك تحسين استهلاكك أكثر' : 'ننصح بمراجعة عادات استهلاك المياه';
+
+    let html = `
+        <div style="background: var(--primary-gradient); color: var(--white); border-radius: var(--border-radius); padding: 30px; text-align: center; margin-bottom: 20px;">
+            <div style="font-size: 1.2rem; opacity: 0.9;">🏠 ${family.name}</div>
+            <div style="font-size: 4rem; font-weight: 800;">${scoreRounded}</div>
+            <div style="font-size: 1.2rem; opacity: 0.9;">${scoreText}</div>
+            <div style="font-size: 1rem; opacity: 0.8; margin-top: 4px;">${scoreSub}</div>
+        </div>
+
+        <div class="card">
+            <h3 class="card-title"><i class="fas fa-chart-simple"></i> إحصائيات الاستهلاك</h3>
+            <div class="stats-grid">
+                <div class="stat-box"><i class="fas fa-users"></i><div class="value">${data.members.length}</div><div class="label">عدد الأفراد</div></div>
+                <div class="stat-box"><i class="fas fa-tint"></i><div class="value">${data.totalDaily}</div><div class="label">الاستهلاك اليومي (لتر)</div></div>
+                <div class="stat-box"><i class="fas fa-calendar-month"></i><div class="value">${data.monthly.toLocaleString()}</div><div class="label">الاستهلاك الشهري (لتر)</div></div>
+                <div class="stat-box"><i class="fas fa-calendar-year"></i><div class="value">${data.yearly.toLocaleString()}</div><div class="label">الاستهلاك السنوي (لتر)</div></div>
+                <div class="stat-box"><i class="fas fa-user"></i><div class="value">${data.avgPerPerson.toFixed(1)}</div><div class="label">متوسط الفرد (لتر)</div></div>
+                <div class="stat-box"><i class="fas fa-money-bill-wave"></i><div class="value">${(data.totalDaily * 0.05).toFixed(2)}</div><div class="label">التكلفة اليومية (ج.م)</div></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 class="card-title"><i class="fas fa-chart-bar"></i> مقارنة استهلاك العائلة</h3>
+            <div id="comparisonContainer">
+    `;
+
+    const sorted = [...data.results].sort((a, b) => b.total - a.total);
+    const maxVal = sorted.length > 0 ? sorted[0].total : 1;
+    sorted.forEach((r, i) => {
+        const pct = (r.total / maxVal * 100);
+        const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i+1}.`;
+        html += `
+            <div class="compare-item">
+                <span class="name">${medal} ${r.name}</span>
+                <div class="bar"><div class="fill" style="width:${pct}%;"></div></div>
+                <span class="value">${r.total} لتر</span>
+            </div>
+        `;
+    });
+
+    html += `
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 class="card-title"><i class="fas fa-chart-pie"></i> توزيع الاستهلاك</h3>
+            <div class="chart-container"><canvas id="resultsChart"></canvas></div>
+        </div>
+
+        <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:16px;">
+            <button class="btn btn-secondary" onclick="navigateTo('family')"><i class="fas fa-users"></i> تعديل العائلة</button>
+            <button class="btn btn-success" onclick="window.print()"><i class="fas fa-print"></i> طباعة النتائج</button>
+        </div>
+    `;
+
+    container.innerHTML = html;
+
+    // Chart
+    setTimeout(() => {
+        const ctx = document.getElementById('resultsChart').getContext('2d');
+        if (window.chartInstance) window.chartInstance.destroy();
+        const labels = data.results.map(r => r.name);
+        const values = data.results.map(r => r.total);
+        window.chartInstance = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: values,
+                    backgroundColor: ['#0077b6', '#48cae4', '#90e0ef', '#00b4d8', '#023e8a', '#0096c7'],
+                    borderWidth: 3,
+                    borderColor: '#fff',
+                }]
+            },
+            options: {
+                responsive: true,
+                animation: { duration: 1200, easing: 'easeOutBounce' },
+                plugins: {
+                    legend: { position: 'bottom', labels: { padding: 16, usePointStyle: true } }
+                }
+            }
+        });
+    }, 300);
+}
+
+// --- تحميل عائلة في الحاسبة ---
+function loadFamilyToCalculator(familyId) {
+    if (!familyId) {
+        document.getElementById('familySize').value = 1;
+        return;
+    }
+    const family = families.find(f => f.id === familyId);
+    if (!family || !family.members) return;
+    document.getElementById('familySize').value = family.members.length;
+}
+
+// --- اختيار عائلة في العداد ---
+let currentMeterFamilyId = null;
+
+function selectMeterFamily(familyId) {
+    currentMeterFamilyId = familyId;
+    document.getElementById('meterReading').value = '';
+    displayMeterHistory();
+}
+
+// --- تعديل دالة حفظ قراءة العداد لتشمل العائلة ---
+function saveMeterReading() {
+    if (!currentMeterFamilyId) {
+        alert('الرجاء اختيار عائلة أولاً');
+        return;
+    }
+    const reading = document.getElementById('meterReading').value;
+    if (!reading || isNaN(reading) || reading <= 0) {
+        alert('الرجاء إدخال قراءة صحيحة (رقم موجب)');
+        return;
+    }
+
+    const family = families.find(f => f.id === currentMeterFamilyId);
+    if (!family) {
+        alert('العائلة غير موجودة');
+        return;
+    }
+
+    if (!family.meterReadings) family.meterReadings = [];
+    
+    const today = new Date().toISOString().split('T')[0];
+    const existing = family.meterReadings.find(r => r.date === today);
+    if (existing) {
+        if (!confirm(`يوجد قراءة مسجلة اليوم (${existing.reading} لتر). هل تريد استبدالها؟`)) {
+            return;
+        }
+        existing.reading = parseFloat(reading);
+    } else {
+        family.meterReadings.push({
+            date: today,
+            reading: parseFloat(reading)
+        });
+    }
+
+    localStorage.setItem('families', JSON.stringify(families));
+    document.getElementById('meterReading').value = '';
+    alert('✅ تم حفظ القراءة بنجاح!');
+    displayMeterHistory();
+}
+
+// --- عرض سجل قراءات العداد للعائلة المختارة ---
+function displayMeterHistory() {
+    const container = document.getElementById('meterHistoryContainer');
+    if (!currentMeterFamilyId) {
+        container.innerHTML = `<div style="text-align:center; padding:30px; color:var(--gray-400);">
+            <i class="fas fa-info-circle" style="font-size:2rem; display:block; margin-bottom:8px;"></i>
+            <p>الرجاء اختيار عائلة</p>
+        </div>`;
+        document.getElementById('meterComparison').style.display = 'none';
+        return;
+    }
+
+    const family = families.find(f => f.id === currentMeterFamilyId);
+    if (!family || !family.meterReadings || family.meterReadings.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding:30px; color:var(--gray-400);">
+            <i class="fas fa-database" style="font-size:2rem; display:block; margin-bottom:8px;"></i>
+            <p>لا توجد قراءات مسجلة لهذه العائلة</p>
+        </div>`;
+        document.getElementById('meterComparison').style.display = 'none';
+        return;
+    }
+
+    const sorted = [...family.meterReadings].sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    let html = `<div style="display: grid; gap: 10px; max-height: 400px; overflow-y: auto; padding: 4px;">`;
+
+    sorted.forEach((r, index) => {
+        const isLatest = index === 0;
+        html += `
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: ${isLatest ? 'var(--primary-light)' : 'var(--white)'}; border-radius: var(--border-radius); border: 1px solid ${isLatest ? 'var(--primary)' : 'var(--gray-200)'};">
+                <div>
+                    <span style="font-weight: 600; color: var(--gray-700);">📅 ${r.date}</span>
+                    ${isLatest ? '<span style="background: var(--primary); color: white; padding: 2px 10px; border-radius: 50px; font-size: 0.75rem; margin-right: 8px;">الأحدث</span>' : ''}
+                </div>
+                <div>
+                    <span style="font-weight: 700; color: var(--primary-dark); font-size: 1.1rem;">${r.reading.toLocaleString()}</span>
+                    <span style="color: var(--gray-400); font-size: 0.85rem;"> لتر</span>
+                    <button class="btn btn-danger btn-sm" onclick="deleteMeterReading('${r.date}')" style="margin-right: 8px;">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+
+    html += `</div>`;
+    container.innerHTML = html;
+    displayMeterComparison();
+}
+
+// --- عرض مقارنة قراءات العداد للعائلة المختارة ---
+function displayMeterComparison() {
+    const container = document.getElementById('comparisonResult');
+    const comparisonDiv = document.getElementById('meterComparison');
+    
+    if (!currentMeterFamilyId) {
+        comparisonDiv.style.display = 'none';
+        return;
+    }
+
+    const family = families.find(f => f.id === currentMeterFamilyId);
+    if (!family || !family.meterReadings || family.meterReadings.length < 2) {
+        comparisonDiv.style.display = 'none';
+        return;
+    }
+
+    comparisonDiv.style.display = 'block';
+    
+    const sorted = [...family.meterReadings].sort((a, b) => new Date(a.date) - new Date(b.date));
+    const latest = sorted[sorted.length - 1];
+    const previous = sorted[sorted.length - 2];
+    
+    const diff = latest.reading - previous.reading;
+    const diffPercent = ((diff / previous.reading) * 100).toFixed(1);
+    
+    let statusColor = diff > 0 ? 'var(--danger)' : 'var(--success)';
+    let statusIcon = diff > 0 ? '📈' : '📉';
+    let statusText = diff > 0 ? 'زيادة في الاستهلاك' : 'انخفاض في الاستهلاك';
+
+    container.innerHTML = `
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px;">
+            <div style="background: var(--white); padding: 16px; border-radius: var(--border-radius); text-align: center;">
+                <div style="color: var(--gray-500); font-size: 0.85rem;">📅 القراءة السابقة</div>
+                <div style="font-weight: 700; color: var(--primary-dark); font-size: 1.4rem;">${previous.reading.toLocaleString()}</div>
+                <div style="color: var(--gray-400); font-size: 0.8rem;">${previous.date}</div>
+            </div>
+            <div style="background: var(--white); padding: 16px; border-radius: var(--border-radius); text-align: center;">
+                <div style="color: var(--gray-500); font-size: 0.85rem;">📅 القراءة الحالية</div>
+                <div style="font-weight: 700; color: var(--primary-dark); font-size: 1.4rem;">${latest.reading.toLocaleString()}</div>
+                <div style="color: var(--gray-400); font-size: 0.8rem;">${latest.date}</div>
+            </div>
+            <div style="background: var(--white); padding: 16px; border-radius: var(--border-radius); text-align: center;">
+                <div style="color: var(--gray-500); font-size: 0.85rem;">${statusIcon} الفرق</div>
+                <div style="font-weight: 700; color: ${statusColor}; font-size: 1.4rem;">${Math.abs(diff).toLocaleString()}</div>
+                <div style="color: var(--gray-400); font-size: 0.8rem;">${statusText} (${diffPercent}%)</div>
+            </div>
+        </div>
+    `;
+}
+
+// --- حذف قراءة عداد لعائلة معينة ---
+function deleteMeterReading(date) {
+    if (!currentMeterFamilyId) return;
+    const family = families.find(f => f.id === currentMeterFamilyId);
+    if (!family) return;
+    if (!confirm(`هل تريد حذف قراءة يوم ${date}؟`)) return;
+    family.meterReadings = family.meterReadings.filter(r => r.date !== date);
+    localStorage.setItem('families', JSON.stringify(families));
+    displayMeterHistory();
+}
+
+// --- عرض تقرير عائلة معينة ---
+function loadFamilyReport(familyId) {
+    const container = document.getElementById('reportsContent');
+    if (!familyId) {
+        container.innerHTML = `<div style="text-align:center; padding:40px; color:var(--gray-400);">
+            <i class="fas fa-file-alt" style="font-size:3rem; color:var(--primary); display:block; margin-bottom:12px;"></i>
+            <p>الرجاء اختيار عائلة لعرض التقرير</p>
+        </div>`;
+        return;
+    }
+
+    const family = families.find(f => f.id === familyId);
+    if (!family || !family.results || family.results.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding:40px; color:var(--gray-400);">
+            <i class="fas fa-info-circle" style="font-size:3rem; color:var(--warning); display:block; margin-bottom:12px;"></i>
+            <p>لا توجد بيانات لهذه العائلة</p>
+        </div>`;
+        return;
+    }
+
+    // عرض تقرير العائلة
+    let html = `
+        <div style="background: var(--primary-gradient); color: white; padding: 20px; border-radius: var(--border-radius); margin-bottom: 20px; text-align: center;">
+            <h3 style="margin-bottom: 8px;">🏠 ${family.name}</h3>
+            <p style="opacity: 0.9;">📅 آخر تحديث: ${family.lastUpdate || family.date}</p>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-box"><i class="fas fa-users"></i><div class="value">${family.members.length}</div><div class="label">عدد الأفراد</div></div>
+            <div class="stat-box"><i class="fas fa-tint"></i><div class="value">${family.totalDaily}</div><div class="label">الاستهلاك اليومي</div></div>
+            <div class="stat-box"><i class="fas fa-calendar-month"></i><div class="value">${family.monthly.toLocaleString()}</div><div class="label">الاستهلاك الشهري</div></div>
+            <div class="stat-box"><i class="fas fa-calendar-year"></i><div class="value">${family.yearly.toLocaleString()}</div><div class="label">الاستهلاك السنوي</div></div>
+        </div>
+        <div style="margin-top: 16px;">
+            <h4 style="color: var(--primary-dark); margin-bottom: 10px;">👤 تفاصيل الأعضاء</h4>
+    `;
+
+    family.members.forEach((m, idx) => {
+        const result = family.results ? family.results.find(r => r.name === m.name) : null;
+        html += `
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-bottom: 1px solid var(--gray-100);">
+                <span style="font-weight: 600;">${idx + 1}. ${m.name}</span>
+                <span style="color: var(--gray-500);">العمر: ${m.age} سنة</span>
+                <span style="font-weight: 700; color: var(--primary);">${result ? result.total : 'غير محسوب'} لتر</span>
+            </div>
+        `;
+    });
+
+    html += `</div>`;
+    container.innerHTML = html;
+}
+
+// --- تحديث دالة التنقل لتشمل الصفحات الجديدة ---
+const originalNavigateTo = navigateTo;
+navigateTo = function(page) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const pageElement = document.getElementById('page-' + page);
+    if (pageElement) pageElement.classList.add('active');
+    document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
+    const links = document.querySelectorAll('.sidebar-menu a');
+    const map = { home: 0, family: 1, results: 2, reports: 3, smart: 4, meter: 5, calculator: 6, tips: 7, goals: 8, about: 9 };
+    if (map[page] !== undefined && links[map[page]]) links[map[page]].classList.add('active');
+    closeSidebar();
+    if (page === 'family') {
+        updateAllFamilyFilters();
+        updateFamiliesList();
+    }
+    if (page === 'results') {
+        updateAllFamilyFilters();
+        const selected = document.getElementById('resultsFamilyFilter').value;
+        if (selected) displayFamilyResults(selected);
+    }
+    if (page === 'reports') {
+        updateAllFamilyFilters();
+    }
+    if (page === 'meter') {
+        updateAllFamilyFilters();
+        displayMeterHistory();
+    }
+    if (page === 'calculator') {
+        updateAllFamilyFilters();
+    }
+    if (page === 'goals') displayGoals();
+    if (page === 'home') updateHomeStats();
+};
+
+// --- تهيئة النظام عند تحميل الصفحة ---
+function initFamiliesSystem() {
+    updateAllFamilyFilters();
+    updateFamiliesList();
+    // إذا كانت هناك عائلات، اختر أول عائلة
+    if (families.length > 0) {
+        const firstFamily = families[0];
+        document.getElementById('familyFilter').value = firstFamily.id;
+        selectFamily(firstFamily.id);
+    }
+}
+
+// استدعاء التهيئة
+initFamiliesSystem();
     // ============ METER (العداد) ============
 let meterReadings = JSON.parse(localStorage.getItem('meterReadings')) || [];
 
@@ -1686,23 +2716,36 @@ function displayComparison() {
     `;
 }
 
-    // ============ NAVIGATION ============
     function navigateTo(page) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById('page-' + page).classList.add('active');
+    const pageElement = document.getElementById('page-' + page);
+    if (pageElement) pageElement.classList.add('active');
     document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
     const links = document.querySelectorAll('.sidebar-menu a');
-    const map = { home: 0, family: 1, results: 2, reports: 3, smart: 4, meter: 5, about: 6 };
+    const map = { home: 0, family: 1, results: 2, reports: 3, smart: 4, meter: 5, calculator: 6, tips: 7, goals: 8, about: 9 };
     if (map[page] !== undefined && links[map[page]]) links[map[page]].classList.add('active');
     closeSidebar();
-    if (page === 'family') renderMembers();
-    if (page === 'results' && savedResults) displayResults(savedResults);
-    if (page === 'reports') loadReports();
-    if (page === 'home') updateHomeStats();
-    if (page === 'meter') displayMeterHistory();
-    if (page === 'tips') { /* لا حاجة لعمل شيء خاص */ }
+    if (page === 'family') {
+        updateAllFamilyFilters();
+        updateFamiliesList();
+    }
+    if (page === 'results') {
+        updateAllFamilyFilters();
+        const selected = document.getElementById('resultsFamilyFilter').value;
+        if (selected) displayFamilyResults(selected);
+    }
+    if (page === 'reports') {
+        updateAllFamilyFilters();
+    }
+    if (page === 'meter') {
+        updateAllFamilyFilters();
+        displayMeterHistory();
+    }
+    if (page === 'calculator') {
+        updateAllFamilyFilters();
+    }
     if (page === 'goals') displayGoals();
-    if (page === 'calculator') { /* لا حاجة لعمل شيء خاص */ }
+    if (page === 'home') updateHomeStats();
 }
 
     // ============ MEMBERS ============
@@ -1744,263 +2787,89 @@ function displayComparison() {
         renderMembers();
     }
 
-    // ============ CALCULATE ============
     function calculateResults() {
-        for (let i = 0; i < members.length; i++) {
-            const m = members[i];
-            if (!m.name || !m.name.trim()) { alert('الرجاء إدخال اسم الفرد رقم ' + (i + 1)); return; }
-            const age = parseInt(m.age);
-            if (isNaN(age) || age < 1 || age > 100) { alert('العمر يجب أن يكون بين 1 و 100 للفرد ' + (i + 1)); return; }
-        }
-
-        const results = members.map(m => {
-            const age = parseInt(m.age);
-            const data = getConsumptionByAge(age);
-            return {
-                name: m.name.trim(),
-                age: age,
-                drink: data.drink,
-                shower: data.shower,
-                wudu: data.wudu,
-                daily: data.daily,
-                total: data.drink + data.shower + data.wudu + data.daily
-            };
-        });
-
-        const totalDaily = results.reduce((sum, r) => sum + r.total, 0);
-        const monthly = totalDaily * 30;
-        const yearly = totalDaily * 365;
-
-        savedResults = { 
-            results, 
-            totalDaily, 
-            monthly, 
-            yearly, 
-            date: new Date().toISOString().split('T')[0],
-            membersCount: results.length,
-            avgPerPerson: totalDaily / results.length
-        };
-        localStorage.setItem('savedResults', JSON.stringify(savedResults));
-
-        const historyEntry = {
-            date: savedResults.date,
-            totalDaily: totalDaily,
-            members: results.map(r => ({ name: r.name, age: r.age, total: r.total }))
-        };
-        consumptionHistory.push(historyEntry);
-        localStorage.setItem('consumptionHistory', JSON.stringify(consumptionHistory));
-
-        // Navigate to results
-        navigateTo('results');
-        displayResults(savedResults);
+    // تحقق من وجود عائلة مختارة
+    if (!currentFamilyId) {
+        alert('الرجاء اختيار عائلة أولاً من القائمة');
+        return;
     }
-
-    // ============ DISPLAY RESULTS ============
-    function displayResults(data) {
-        const container = document.getElementById('resultsContainer');
-        
-        // Calculate score
-        const avgDaily = data.totalDaily / data.membersCount;
-        const score = Math.max(0, Math.min(100, 100 - (avgDaily / 3)));
-        const scoreRounded = Math.round(score);
-        
-        let scoreText = '';
-        let scoreSub = '';
-        if (scoreRounded > 80) {
-            scoreText = 'ممتاز جداً! 🌟';
-            scoreSub = 'أنت توفر المياه بشكل ممتاز مقارنة بالهدف الشهري';
-        } else if (scoreRounded > 60) {
-            scoreText = 'جيد جداً 👍';
-            scoreSub = 'استمر في الترشيد وحافظ على هذه النسبة';
-        } else if (scoreRounded > 40) {
-            scoreText = 'متوسط 📊';
-            scoreSub = 'يمكنك تحسين استهلاكك أكثر';
-        } else {
-            scoreText = 'بحاجة للتحسين ⚠️';
-            scoreSub = 'ننصح بمراجعة عادات استهلاك المياه';
-        }
-
-        let html = `
-            <!-- Score -->
-            <div class="result-score">
-                <div class="score-label">💧 تقييم استهلاك العائلة</div>
-                <div class="score-number">${scoreRounded}</div>
-                <div class="score-label">${scoreText}</div>
-                <div class="score-sub">${scoreSub}</div>
-            </div>
-
-            <!-- Stats -->
-            <div class="card">
-                <h3 class="card-title"><i class="fas fa-chart-simple"></i> إحصائيات الاستهلاك</h3>
-                <div class="stats-grid">
-                    <div class="stat-box"><i class="fas fa-users"></i><div class="value">${data.membersCount}</div><div class="label">عدد الأفراد</div></div>
-                    <div class="stat-box"><i class="fas fa-tint"></i><div class="value">${data.totalDaily}</div><div class="label">الاستهلاك اليومي (لتر)</div></div>
-                    <div class="stat-box"><i class="fas fa-calendar-month"></i><div class="value">${data.monthly.toLocaleString()}</div><div class="label">الاستهلاك الشهري (لتر)</div></div>
-                    <div class="stat-box"><i class="fas fa-calendar-year"></i><div class="value">${data.yearly.toLocaleString()}</div><div class="label">الاستهلاك السنوي (لتر)</div></div>
-                    <div class="stat-box"><i class="fas fa-user"></i><div class="value">${data.avgPerPerson.toFixed(1)}</div><div class="label">متوسط الفرد (لتر)</div></div>
-                    <div class="stat-box"><i class="fas fa-money-bill-wave"></i><div class="value">${(data.totalDaily * 0.05).toFixed(2)}</div><div class="label">التكلفة اليومية (ج.م)</div></div>
-                </div>
-            </div>
-
-            <!-- Family Comparison -->
-            <div class="card">
-                <h3 class="card-title"><i class="fas fa-chart-bar"></i> مقارنة استهلاك العائلة</h3>
-                <div id="comparisonContainer">
-        `;
-
-        const sorted = [...data.results].sort((a, b) => b.total - a.total);
-        const maxVal = sorted.length > 0 ? sorted[0].total : 1;
-        sorted.forEach((r, i) => {
-            const pct = (r.total / maxVal * 100);
-            const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i+1}.`;
-            html += `
-                <div class="compare-item">
-                    <span class="name">${medal} ${r.name}</span>
-                    <div class="bar"><div class="fill" style="width:${pct}%;"></div></div>
-                    <span class="value">${r.total} لتر</span>
-                </div>
-            `;
-        });
-
-        html += `
-                </div>
-            </div>
-
-            <!-- Chart -->
-            <div class="card">
-                <h3 class="card-title"><i class="fas fa-chart-pie"></i> توزيع الاستهلاك</h3>
-                <div class="chart-container"><canvas id="resultsChart"></canvas></div>
-            </div>
-
-            <!-- Quick Actions -->
-            <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:16px;">
-                <button class="btn btn-primary" onclick="navigateTo('reports')"><i class="fas fa-file-alt"></i> عرض التقارير</button>
-                <button class="btn btn-secondary" onclick="navigateTo('family')"><i class="fas fa-users"></i> تعديل العائلة</button>
-                <button class="btn btn-success" onclick="window.print()"><i class="fas fa-print"></i> طباعة النتائج</button>
-            </div>
-        `;
-
-        container.innerHTML = html;
-
-        // Chart
-        setTimeout(() => {
-            const ctx = document.getElementById('resultsChart').getContext('2d');
-            if (chartInstance) chartInstance.destroy();
-            const labels = data.results.map(r => r.name);
-            const values = data.results.map(r => r.total);
-            chartInstance = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        data: values,
-                        backgroundColor: ['#0077b6', '#48cae4', '#90e0ef', '#00b4d8', '#023e8a', '#0096c7'],
-                        borderWidth: 3,
-                        borderColor: '#fff',
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    animation: { duration: 1200, easing: 'easeOutBounce' },
-                    plugins: {
-                        legend: { position: 'bottom', labels: { padding: 16, usePointStyle: true } }
-                    }
-                }
-            });
-        }, 300);
-    }
-
-    // ============ REPORTS ============
-    function loadReports() {
-        const container = document.getElementById('reportsContent');
-        const history = consumptionHistory;
-        
-        if (history.length === 0) {
-            container.innerHTML = `
-                <div style="text-align:center; padding:40px; color:var(--gray-400);">
-                    <i class="fas fa-file-alt" style="font-size:3rem; color:var(--primary); display:block; margin-bottom:12px;"></i>
-                    <p>لا توجد بيانات لعرض التقارير</p>
-                    <button class="btn btn-primary" onclick="navigateTo('family')" style="margin-top:12px;"><i class="fas fa-arrow-left"></i> احسب استهلاكك</button>
-                </div>
-            `;
+    const family = families.find(f => f.id === currentFamilyId);
+    if (!family) return;
+    
+    // التحقق من صحة بيانات الأعضاء
+    for (let i = 0; i < editingMembers.length; i++) {
+        const m = editingMembers[i];
+        if (!m.name || !m.name.trim()) {
+            alert(`الرجاء إدخال اسم العضو رقم ${i + 1}`);
             return;
         }
-
-        // Calculate totals
-        const total = history.reduce((s, h) => s + h.totalDaily, 0);
-        const avg = total / history.length;
-        const last7 = history.slice(-7);
-        const weekTotal = last7.reduce((s, h) => s + h.totalDaily, 0);
-        const last30 = history.slice(-30);
-        const monthTotal = last30.reduce((s, h) => s + h.totalDaily, 0);
-
-        let html = `
-            <div class="stats-grid">
-                <div class="stat-box"><i class="fas fa-calendar-day"></i><div class="value">${avg.toFixed(0)}</div><div class="label">المتوسط اليومي</div></div>
-                <div class="stat-box"><i class="fas fa-calendar-week"></i><div class="value">${weekTotal.toFixed(0)}</div><div class="label">استهلاك الأسبوع</div></div>
-                <div class="stat-box"><i class="fas fa-calendar-month"></i><div class="value">${monthTotal.toFixed(0)}</div><div class="label">استهلاك الشهر</div></div>
-                <div class="stat-box"><i class="fas fa-calendar-year"></i><div class="value">${(monthTotal * 12).toFixed(0)}</div><div class="label">استهلاك السنة (تقديري)</div></div>
-            </div>
-            <div class="chart-container"><canvas id="reportChart"></canvas></div>
-            <div style="margin-top:16px;">
-                <h4 style="color:var(--primary-dark); margin-bottom:10px;">📋 سجل الاستهلاك اليومي</h4>
-        `;
-
-        history.slice(-10).reverse().forEach(h => {
-            html += `
-                <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; border-bottom:1px solid var(--gray-100);">
-                    <span style="font-weight:600; color:var(--gray-700);">${h.date}</span>
-                    <span style="font-weight:700; color:var(--primary);">${h.totalDaily} لتر</span>
-                    <span style="color:var(--gray-400); font-size:0.85rem;">👤 ${h.members ? h.members.length : 0} أفراد</span>
-                </div>
-            `;
-        });
-
-        html += `</div>`;
-        container.innerHTML = html;
-
-        // Chart
-        setTimeout(() => {
-            const ctx = document.getElementById('reportChart').getContext('2d');
-            if (window.reportChartInstance) window.reportChartInstance.destroy();
-            const labels = history.slice(-14).map(h => h.date);
-            const data = history.slice(-14).map(h => h.totalDaily);
-            if (labels.length > 0) {
-                window.reportChartInstance = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'الاستهلاك اليومي (لتر)',
-                            data: data,
-                            backgroundColor: 'rgba(0, 119, 182, 0.6)',
-                            borderColor: '#0077b6',
-                            borderWidth: 2,
-                            borderRadius: 8,
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        animation: { duration: 800 },
-                        plugins: { legend: { display: false } },
-                        scales: { y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } }, x: { grid: { display: false } } }
-                    }
-                });
-            }
-        }, 300);
-    }
-
-    // ============ HOME STATS ============
-    function updateHomeStats() {
-        // Update quick tips with dynamic data if available
-        if (savedResults) {
-            const tips = document.querySelectorAll('.quick-tip');
-            if (tips.length >= 4) {
-                tips[0].querySelector('.tip-desc').textContent = `وفر ${(savedResults.totalDaily * 0.2).toFixed(0)} لتر يومياً`;
-                tips[1].querySelector('.tip-desc').textContent = `وفر ${(savedResults.totalDaily * 0.1).toFixed(0)} لتر`;
-            }
+        const age = parseInt(m.age);
+        if (isNaN(age) || age < 1 || age > 100) {
+            alert(`العمر يجب أن يكون بين 1 و 100 للعضو ${m.name}`);
+            return;
         }
     }
+
+    // حفظ وحساب الاستهلاك
+    saveCurrentFamily();
+    
+    // عرض النتائج
+    document.getElementById('resultsFamilyFilter').value = currentFamilyId;
+    navigateTo('results');
+    displayFamilyResults(currentFamilyId);
+}
+
+   function displayResults(data) {
+    const container = document.getElementById('resultsContainer');
+    // هذه الدالة تستخدم للتوافق القديم، الآن نستخدم displayFamilyResults
+    if (data && data.results) {
+        displayFamilyResults(data.id || families[0]?.id);
+    } else {
+        container.innerHTML = `<div style="text-align:center; padding:40px; color:var(--gray-400);">
+            <i class="fas fa-info-circle" style="font-size:3rem; display:block; margin-bottom:12px;"></i>
+            <p>الرجاء اختيار عائلة لعرض النتائج</p>
+        </div>`;
+    }
+}
+
+    function loadReports() {
+    const container = document.getElementById('reportsContent');
+    if (families.length === 0) {
+        container.innerHTML = `
+            <div style="text-align:center; padding:40px; color:var(--gray-400);">
+                <i class="fas fa-file-alt" style="font-size:3rem; color:var(--primary); display:block; margin-bottom:12px;"></i>
+                <p>لا توجد عائلات مسجلة</p>
+                <button class="btn btn-primary" onclick="navigateTo('family')" style="margin-top:12px;">
+                    <i class="fas fa-arrow-left"></i> أضف عائلة
+                </button>
+            </div>
+        `;
+        return;
+    }
+    // إذا كان هناك فلتر محدد، عرض التقرير
+    const selected = document.getElementById('reportsFamilyFilter').value;
+    if (selected) {
+        loadFamilyReport(selected);
+    } else {
+        // عرض أول عائلة بشكل افتراضي
+        const firstFamily = families[0];
+        if (firstFamily) {
+            document.getElementById('reportsFamilyFilter').value = firstFamily.id;
+            loadFamilyReport(firstFamily.id);
+        }
+    }
+}
+
+   function updateHomeStats() {
+    const tips = document.querySelectorAll('.quick-tip');
+    if (tips.length >= 4 && families.length > 0) {
+        const firstFamily = families[0];
+        if (firstFamily.totalDaily) {
+            tips[0].querySelector('.tip-desc').textContent = `وفر ${(firstFamily.totalDaily * 0.2).toFixed(0)} لتر يومياً`;
+            tips[1].querySelector('.tip-desc').textContent = `وفر ${(firstFamily.totalDaily * 0.1).toFixed(0)} لتر`;
+        }
+    }
+}
 
     // ============ INIT ============
     renderMembers();
