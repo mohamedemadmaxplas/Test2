@@ -786,11 +786,11 @@
                     <div class="value">حاسبة</div>
                     <div class="label">احسب استهلاكك</div>
                 </div>
-                <div class="stat-box" style="cursor:pointer;" onclick="alert('📊 سيتم فتح قراءة العداد قريباً')">
-                    <i class="fas fa-tachometer-alt"></i>
-                    <div class="value">العداد</div>
-                    <div class="label">سجل قراءاتك</div>
-                </div>
+               <div class="stat-box" style="cursor:pointer;" onclick="navigateTo('meter')">
+    <i class="fas fa-tachometer-alt"></i>
+    <div class="value">العداد</div>
+    <div class="label">سجل قراءاتك</div>
+</div>
                 <div class="stat-box" style="cursor:pointer;" onclick="alert('🔍 سيتم فتح كشف التسريب قريباً')">
                     <i class="fas fa-exclamation-triangle"></i>
                     <div class="value">التسريب</div>
@@ -840,6 +840,59 @@
             </div>
         </div>
     </div>
+    <!-- ===== METER PAGE (العداد) ===== -->
+<div id="page-meter" class="page">
+    <div class="card">
+        <h2 class="card-title"><i class="fas fa-tachometer-alt"></i> قراءة العداد</h2>
+        
+        <!-- خيارات الإدخال -->
+        <div style="margin-bottom: 24px;">
+            <label style="font-weight: 600; color: var(--gray-600); display: block; margin-bottom: 8px;">اختر طريقة الإدخال:</label>
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                <button class="btn btn-primary" id="manualInputBtn" onclick="selectMeterInput('manual')">
+                    <i class="fas fa-pen"></i> إدخال يدوي
+                </button>
+                <button class="btn btn-secondary" id="subscriptionInputBtn" onclick="selectMeterInput('subscription')">
+                    <i class="fas fa-id-card"></i> إدخال برقم المشترك
+                </button>
+            </div>
+        </div>
+
+        <!-- حقل الإدخال اليدوي -->
+        <div id="manualInputSection" style="display: none; background: var(--gray-50); padding: 20px; border-radius: var(--border-radius); margin-bottom: 20px;">
+            <div class="field-group" style="margin-bottom: 16px;">
+                <label style="font-weight: 600; color: var(--gray-600); display: block; margin-bottom: 6px;">📊 قراءة العداد (باللتر)</label>
+                <input type="number" id="meterReading" placeholder="أدخل قراءة العداد باللتر" style="width: 100%; padding: 12px 16px; border: 2px solid var(--gray-200); border-radius: 10px; font-size: 1rem;">
+            </div>
+            <button class="btn btn-success" onclick="saveMeterReading()">
+                <i class="fas fa-save"></i> حفظ القراءة
+            </button>
+        </div>
+
+        <!-- رسالة رقم المشترك -->
+        <div id="subscriptionSection" style="display: none; background: var(--primary-light); padding: 20px; border-radius: var(--border-radius); margin-bottom: 20px; text-align: center;">
+            <i class="fas fa-info-circle" style="font-size: 2rem; color: var(--primary); display: block; margin-bottom: 10px;"></i>
+            <p style="font-size: 1.1rem; color: var(--primary-dark); font-weight: 600;">📌 سيتم تطبيق ميزة الإدخال برقم المشترك بعد موافقة شركة المياه</p>
+            <p style="color: var(--gray-600); margin-top: 6px;">نعتذر عن الإزعاج، نعمل على توفير هذه الخدمة قريباً</p>
+        </div>
+
+        <!-- عرض القراءات السابقة -->
+        <div style="margin-top: 24px;">
+            <h3 style="color: var(--primary-dark); margin-bottom: 16px;"><i class="fas fa-history"></i> سجل القراءات</h3>
+            <div id="meterHistoryContainer">
+                <!-- سيتم عرض القراءات هنا -->
+            </div>
+        </div>
+
+        <!-- المقارنة -->
+        <div id="meterComparison" style="margin-top: 24px; display: none;">
+            <h3 style="color: var(--primary-dark); margin-bottom: 16px;"><i class="fas fa-exchange-alt"></i> مقارنة القراءات</h3>
+            <div id="comparisonResult" style="background: var(--gray-50); padding: 16px; border-radius: var(--border-radius);">
+                <!-- سيتم عرض المقارنة هنا -->
+            </div>
+        </div>
+    </div>
+</div>
 
     <!-- Footer -->
     <footer style="margin-top:40px; padding:20px; text-align:center; color:var(--gray-500); font-size:0.85rem; background:rgba(255,255,255,0.5); border-radius:var(--border-radius-lg);">
@@ -895,21 +948,158 @@
         document.getElementById('sidebar').classList.remove('open');
         document.getElementById('sidebarOverlay').classList.remove('active');
     }
+    // ============ METER (العداد) ============
+let meterReadings = JSON.parse(localStorage.getItem('meterReadings')) || [];
+
+function selectMeterInput(type) {
+    if (type === 'manual') {
+        document.getElementById('manualInputSection').style.display = 'block';
+        document.getElementById('subscriptionSection').style.display = 'none';
+        document.getElementById('manualInputBtn').className = 'btn btn-primary';
+        document.getElementById('subscriptionInputBtn').className = 'btn btn-secondary';
+    } else {
+        document.getElementById('manualInputSection').style.display = 'none';
+        document.getElementById('subscriptionSection').style.display = 'block';
+        document.getElementById('subscriptionInputBtn').className = 'btn btn-primary';
+        document.getElementById('manualInputBtn').className = 'btn btn-secondary';
+    }
+}
+
+function saveMeterReading() {
+    const reading = document.getElementById('meterReading').value;
+    if (!reading || isNaN(reading) || reading <= 0) {
+        alert('الرجاء إدخال قراءة صحيحة (رقم موجب)');
+        return;
+    }
+
+    const today = new Date().toISOString().split('T')[0];
+    
+    const existing = meterReadings.find(r => r.date === today);
+    if (existing) {
+        if (!confirm(`يوجد قراءة مسجلة اليوم (${existing.reading} لتر). هل تريد استبدالها؟`)) {
+            return;
+        }
+        existing.reading = parseFloat(reading);
+    } else {
+        meterReadings.push({
+            date: today,
+            reading: parseFloat(reading)
+        });
+    }
+
+    localStorage.setItem('meterReadings', JSON.stringify(meterReadings));
+    document.getElementById('meterReading').value = '';
+    alert('✅ تم حفظ القراءة بنجاح!');
+    displayMeterHistory();
+}
+
+function displayMeterHistory() {
+    const container = document.getElementById('meterHistoryContainer');
+    
+    if (meterReadings.length === 0) {
+        container.innerHTML = `
+            <div style="text-align: center; padding: 30px; color: var(--gray-400);">
+                <i class="fas fa-database" style="font-size: 2rem; display: block; margin-bottom: 8px;"></i>
+                <p>لا توجد قراءات مسجلة</p>
+            </div>
+        `;
+        document.getElementById('meterComparison').style.display = 'none';
+        return;
+    }
+
+    const sorted = [...meterReadings].sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    let html = `<div style="display: grid; gap: 10px; max-height: 400px; overflow-y: auto; padding: 4px;">`;
+
+    sorted.forEach((r, index) => {
+        const isLatest = index === 0;
+        html += `
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: ${isLatest ? 'var(--primary-light)' : 'var(--white)'}; border-radius: var(--border-radius); border: 1px solid ${isLatest ? 'var(--primary)' : 'var(--gray-200)'};">
+                <div>
+                    <span style="font-weight: 600; color: var(--gray-700);">📅 ${r.date}</span>
+                    ${isLatest ? '<span style="background: var(--primary); color: white; padding: 2px 10px; border-radius: 50px; font-size: 0.75rem; margin-right: 8px;">الأحدث</span>' : ''}
+                </div>
+                <div>
+                    <span style="font-weight: 700; color: var(--primary-dark); font-size: 1.1rem;">${r.reading.toLocaleString()}</span>
+                    <span style="color: var(--gray-400); font-size: 0.85rem;"> لتر</span>
+                    <button class="btn btn-danger btn-sm" onclick="deleteMeterReading('${r.date}')" style="margin-right: 8px;">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+
+    html += `</div>`;
+    container.innerHTML = html;
+    displayComparison();
+}
+
+function deleteMeterReading(date) {
+    if (!confirm(`هل تريد حذف قراءة يوم ${date}؟`)) return;
+    meterReadings = meterReadings.filter(r => r.date !== date);
+    localStorage.setItem('meterReadings', JSON.stringify(meterReadings));
+    displayMeterHistory();
+}
+
+function displayComparison() {
+    const container = document.getElementById('comparisonResult');
+    const comparisonDiv = document.getElementById('meterComparison');
+    
+    if (meterReadings.length < 2) {
+        comparisonDiv.style.display = 'none';
+        return;
+    }
+
+    comparisonDiv.style.display = 'block';
+    
+    const sorted = [...meterReadings].sort((a, b) => new Date(a.date) - new Date(b.date));
+    const latest = sorted[sorted.length - 1];
+    const previous = sorted[sorted.length - 2];
+    
+    const diff = latest.reading - previous.reading;
+    const diffPercent = ((diff / previous.reading) * 100).toFixed(1);
+    
+    let statusColor = diff > 0 ? 'var(--danger)' : 'var(--success)';
+    let statusIcon = diff > 0 ? '📈' : '📉';
+    let statusText = diff > 0 ? 'زيادة في الاستهلاك' : 'انخفاض في الاستهلاك';
+
+    container.innerHTML = `
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px;">
+            <div style="background: var(--white); padding: 16px; border-radius: var(--border-radius); text-align: center;">
+                <div style="color: var(--gray-500); font-size: 0.85rem;">📅 القراءة السابقة</div>
+                <div style="font-weight: 700; color: var(--primary-dark); font-size: 1.4rem;">${previous.reading.toLocaleString()}</div>
+                <div style="color: var(--gray-400); font-size: 0.8rem;">${previous.date}</div>
+            </div>
+            <div style="background: var(--white); padding: 16px; border-radius: var(--border-radius); text-align: center;">
+                <div style="color: var(--gray-500); font-size: 0.85rem;">📅 القراءة الحالية</div>
+                <div style="font-weight: 700; color: var(--primary-dark); font-size: 1.4rem;">${latest.reading.toLocaleString()}</div>
+                <div style="color: var(--gray-400); font-size: 0.8rem;">${latest.date}</div>
+            </div>
+            <div style="background: var(--white); padding: 16px; border-radius: var(--border-radius); text-align: center;">
+                <div style="color: var(--gray-500); font-size: 0.85rem;">${statusIcon} الفرق</div>
+                <div style="font-weight: 700; color: ${statusColor}; font-size: 1.4rem;">${Math.abs(diff).toLocaleString()}</div>
+                <div style="color: var(--gray-400); font-size: 0.8rem;">${statusText} (${diffPercent}%)</div>
+            </div>
+        </div>
+    `;
+}
 
     // ============ NAVIGATION ============
     function navigateTo(page) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById('page-' + page).classList.add('active');
-        document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
-        const links = document.querySelectorAll('.sidebar-menu a');
-        const map = { home: 0, family: 1, results: 2, reports: 3, smart: 4, about: 5 };
-        if (map[page] !== undefined && links[map[page]]) links[map[page]].classList.add('active');
-        closeSidebar();
-        if (page === 'family') renderMembers();
-        if (page === 'results' && savedResults) displayResults(savedResults);
-        if (page === 'reports') loadReports();
-        if (page === 'home') updateHomeStats();
-    }
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + page).classList.add('active');
+    document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
+    const links = document.querySelectorAll('.sidebar-menu a');
+    const map = { home: 0, family: 1, results: 2, reports: 3, smart: 4, meter: 5, about: 6 };
+    if (map[page] !== undefined && links[map[page]]) links[map[page]].classList.add('active');
+    closeSidebar();
+    if (page === 'family') renderMembers();
+    if (page === 'results' && savedResults) displayResults(savedResults);
+    if (page === 'reports') loadReports();
+    if (page === 'home') updateHomeStats();
+    if (page === 'meter') displayMeterHistory(); // أضف هذا السطر
+}
 
     // ============ MEMBERS ============
     function renderMembers() {
@@ -1222,6 +1412,8 @@
             </div>
         `;
     }
+
+    displayMeterHistory();
 
     console.log('💧 WaterWise - نظام ترشيد المياه المتكامل');
     console.log('👥 Developed by Code Team');
