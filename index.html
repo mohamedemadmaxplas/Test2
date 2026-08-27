@@ -6662,7 +6662,8 @@ if (LiveKitLib) {
 //  إعدادات OpenRouter API (مجاني)
 // ============================================================
 
-
+// ✅ مفتاح API الخاص بك من OpenRouter
+const DEEPSEEK_API_KEY = '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';
 
 // ✅ عنوان API الصحيح
 const DEEPSEEK_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
@@ -6724,13 +6725,8 @@ function showToast(msg) {
         let dataArray = null;
         let animationFrame = null;
 
-       // ============================================================
-//  🔐 دوال التشفير والتحقق من المدير (SHA-256)
-//  ⚠️ اليوزرنيم والپاسورد مش موجودين في الكود نهائياً
-//  ✅ كل حاجة بتتخزن في Firebase مشفرة
-// ============================================================
 
-// ==================== 1. دالة التشفير SHA-256 ====================
+
 async function sha256(text) {
     try {
         const encoder = new TextEncoder();
@@ -6743,13 +6739,20 @@ async function sha256(text) {
         return null;
     }
 }
+async function testPassword() {
+    const result = await verifyAdminPassword('011441000mo');
+    console.log('🔐 نتيجة التحقق:', result);
+}
 
-// ==================== 2. التحقق من اليوزرنيم ====================
 async function checkAdminUsername(userMessage) {
     try {
+        console.log('🔍 جاري التحقق من اليوزرنيم:', userMessage);
+        
         // ✅ جلب الهاش المخزن من Firebase
-        const snapshot = await db.ref('settings/admin/username').once('value');
+        const snapshot = await db.ref('admin/username').once('value');
         const storedHash = snapshot.val();
+        
+        console.log('📦 الهاش المخزن:', storedHash);
         
         if (!storedHash) {
             console.warn('⚠️ لا يوجد يوزرنيم مدير مخزن في Firebase');
@@ -6759,38 +6762,20 @@ async function checkAdminUsername(userMessage) {
         // ✅ تشفير النص اللي كتبه المستخدم
         const inputHash = await sha256(userMessage);
         
+        console.log('🔑 الهاش المدخل:', inputHash);
+        
         // ✅ مقارنة الهاشات
-        return inputHash === storedHash;
+        const isMatch = (inputHash === storedHash);
+        console.log('✅ هل هناك تطابق؟', isMatch);
+        
+        return isMatch;
+        
     } catch (error) {
         console.error('❌ خطأ في التحقق من اليوزرنيم:', error);
         return false;
     }
 }
 
-// ==================== 3. التحقق من الباسورد ====================
-async function verifyAdminPassword(inputPassword) {
-    try {
-        // ✅ جلب الهاش المخزن من Firebase
-        const snapshot = await db.ref('settings/admin/password').once('value');
-        const storedHash = snapshot.val();
-        
-        if (!storedHash) {
-            console.warn('⚠️ لا يوجد باسورد مدير مخزن في Firebase');
-            return false;
-        }
-        
-        // ✅ تشفير النص اللي كتبه المستخدم
-        const inputHash = await sha256(inputPassword);
-        
-        // ✅ مقارنة الهاشات
-        return inputHash === storedHash;
-    } catch (error) {
-        console.error('❌ خطأ في التحقق من الباسورد:', error);
-        return false;
-    }
-}
-
-// ==================== 4. فتح نافذة الباسورد ====================
 function openAdminPasswordModal() {
     // ✅ إزالة أي نافذة موجودة
     const existing = document.getElementById('adminPasswordModal');
@@ -6811,6 +6796,7 @@ function openAdminPasswordModal() {
                 <div class="w-20 h-20 mx-auto bg-blue-100 rounded-full flex items-center justify-center mb-3">
                     <i class="fas fa-shield-alt text-4xl text-blue-600"></i>
                 </div>
+                <h3 class="text-2xl font-bold text-gray-800">🔐 تفعيل وضع المدير</h3>
                 <p class="text-gray-500 text-sm mt-1">أدخل كلمة المرور لتفعيل صلاحيات المدير</p>
             </div>
             
@@ -6819,8 +6805,7 @@ function openAdminPasswordModal() {
                 <input type="password" id="adminPasswordInput" 
                        class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg" 
                        placeholder="أدخل كلمة المرور"
-                       autofocus
-                       onkeydown="if(event.key==='Enter') verifyAdminPasswordFromBot()">
+                       autofocus>
             </div>
             
             <button onclick="verifyAdminPasswordFromBot()" 
@@ -6839,17 +6824,72 @@ function openAdminPasswordModal() {
     
     // ✅ التركيز على حقل الإدخال
     setTimeout(() => {
-        const input = document.getElementById('adminPasswordInput');
-        if (input) input.focus();
+        const input = modal.querySelector('#adminPasswordInput');
+        if (input) {
+            input.focus();
+        }
     }, 300);
 }
 
-// ==================== 5. التحقق من الباسورد وتفعيل المدير ====================
+
+
+
+async function verifyAdminPassword(inputPassword) {
+    try {
+        console.log('🔍 جاري التحقق من الباسورد:', inputPassword);
+        
+        // ✅ التحقق من وجود الباسورد
+        if (!inputPassword || inputPassword.trim() === '') {
+            console.warn('⚠️ الباسورد فارغ');
+            return false;
+        }
+        
+        // ✅ جلب الهاش المخزن من Firebase
+        const snapshot = await db.ref('admin/password').once('value');
+        const storedHash = snapshot.val();
+        
+        console.log('📦 الهاش المخزن:', storedHash);
+        
+        // ✅ التحقق من وجود الهاش
+        if (!storedHash) {
+            console.warn('⚠️ لا يوجد باسورد في Firebase');
+            showToast('❌ كلمة المرور غير مسجلة في النظام');
+            return false;
+        }
+        
+        // ✅ تشفير كلمة المرور المدخلة
+        const inputHash = await sha256(inputPassword.trim());
+        console.log('🔑 الهاش المدخل:', inputHash);
+        
+        // ✅ مقارنة الهاشات
+        const isMatch = (inputHash === storedHash);
+        console.log('✅ هل هناك تطابق؟', isMatch);
+        
+        // ✅ إرجاع النتيجة (true/false)
+        return isMatch;
+        
+    } catch (error) {
+        console.error('❌ خطأ في التحقق من الباسورد:', error);
+        showToast('❌ حدث خطأ في التحقق');
+        return false;
+    }
+}
+
 async function verifyAdminPasswordFromBot() {
-    const input = document.getElementById('adminPasswordInput');
-    if (!input) return;
+    const modal = document.getElementById('adminPasswordModal');
+    if (!modal) {
+        showToast('❌ لم يتم العثور على نافذة كلمة المرور');
+        return;
+    }
+    
+    const input = modal.querySelector('#adminPasswordInput');
+    if (!input) {
+        showToast('❌ لم يتم العثور على حقل كلمة المرور');
+        return;
+    }
     
     const password = input.value.trim();
+    console.log('🔍 الباسورد المدخل من النافذة:', password);
     
     if (!password) {
         showToast('❌ الرجاء إدخال كلمة المرور');
@@ -6857,32 +6897,34 @@ async function verifyAdminPasswordFromBot() {
         return;
     }
     
-    // ✅ تعطيل الزر أثناء التحقق
-    const btn = document.querySelector('#adminPasswordModal button');
+    const btn = modal.querySelector('button');
     if (btn) {
         btn.disabled = true;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin ml-2"></i> جاري التحقق...';
     }
     
     try {
-        // ✅ التحقق من الباسورد
         const isValid = await verifyAdminPassword(password);
+        console.log('✅ نتيجة التحقق النهائية:', isValid);
         
-        if (isValid) {
+        if (isValid === true) {
             // ✅ تفعيل المدير
-            await activateUserAsAdmin(currentUser.uid);
+            if (currentUser) {
+                await db.ref(`users/${currentUser.uid}`).update({
+                    role: 'admin',
+                    isAdmin: true,
+                    activatedAt: new Date().toISOString()
+                });
+                currentUser.role = 'admin';
+                currentUser.isAdmin = true;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            }
             
-            // ✅ إغلاق النافذة
-            const modal = document.getElementById('adminPasswordModal');
-            if (modal) modal.remove();
-            
+            modal.remove();
             showToast('✅ تم تفعيل وضع المدير بنجاح! 👑');
-            
-            // ✅ تحديث الواجهات
             updateHomeUI();
             updateSidebarUI();
             
-            // ✅ فتح لوحة المدير
             setTimeout(() => {
                 showAdminPanel();
             }, 500);
@@ -6891,8 +6933,6 @@ async function verifyAdminPasswordFromBot() {
             showToast('❌ كلمة المرور غير صحيحة');
             input.value = '';
             input.focus();
-            
-            // ✅ إعادة تفعيل الزر
             if (btn) {
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-unlock ml-2"></i> تأكيد';
@@ -6908,20 +6948,21 @@ async function verifyAdminPasswordFromBot() {
     }
 }
 
-// ==================== 6. تفعيل المستخدم كمدير ====================
+
+
+
 async function activateUserAsAdmin(uid) {
     if (!uid) {
         showToast('❌ يرجى تسجيل الدخول أولاً');
-        return;
+        return false;
     }
     
     try {
-        // ✅ تحديث صلاحيات المستخدم في Firebase
+        // ✅ تحديث بيانات المستخدم في Firebase
         await db.ref(`users/${uid}`).update({
             role: 'admin',
             isAdmin: true,
-            activatedAt: new Date().toISOString(),
-            activatedBy: 'bot_verification'
+            activatedAt: new Date().toISOString()
         });
         
         // ✅ تحديث currentUser
@@ -6931,11 +6972,20 @@ async function activateUserAsAdmin(uid) {
             localStorage.setItem('currentUser', JSON.stringify(currentUser));
         }
         
-        console.log('✅ تم تفعيل المدير بنجاح للمستخدم:', uid);
+        console.log('✅ تم تفعيل المستخدم كمدير:', uid);
+        showToast('✅ تم تفعيل المدير بنجاح! 👑');
+        
+        // ✅ تحديث الواجهات
+        updateHomeUI();
+        updateSidebarUI();
+        updateMyAccountUI();
+        
+        return true;
         
     } catch (error) {
         console.error('❌ خطأ في تفعيل المدير:', error);
-        throw error;
+        showToast('❌ حدث خطأ في تفعيل المدير');
+        return false;
     }
 }
 
@@ -7573,8 +7623,32 @@ function closeScreenFullscreen() {
         }
 
         function isAdmin() {
-            return currentUser && (currentUser.role === 'admin' || currentUser.isAdmin === true);
-        }
+    return currentUser && (currentUser.role === 'admin' || currentUser.isAdmin === true);
+}
+
+
+async function testAdminFlow() {
+    console.log('🧪 بدء اختبار تدفق المدير...');
+    
+    // 1. اختبار اليوزرنيم
+    const usernameResult = await checkAdminUsername('adminmohamed011');
+    console.log('🧪 نتيجة اليوزرنيم:', usernameResult);
+    
+    // 2. اختبار الباسورد
+    const passwordResult = await verifyAdminPassword('011441000mo');
+    console.log('🧪 نتيجة الباسورد:', passwordResult);
+    
+    // 3. النتيجة النهائية
+    if (usernameResult === true && passwordResult === true) {
+        console.log('✅ ✅ ✅ كل شيء يعمل!');
+        showToast('✅ كل شيء يعمل! جرب في الشات الآن');
+    } else {
+        console.log('❌ هناك مشكلة في التحقق');
+        showToast('❌ هناك مشكلة في التحقق');
+    }
+    
+    return { usernameResult, passwordResult };
+}
 
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -10099,10 +10173,13 @@ async function closeTicketDueToInactivity(ticketId) {
 }
 
 // ============================================================
-//  📌 حذف التذكرة بعد انتهاء المحادثة
+//  إصلاح دالة حذف التذكرة - النسخة النهائية
 // ============================================================
+
 async function deleteTicketAfterChat(ticketId) {
     try {
+        console.log('🗑️ جاري حذف التذكرة:', ticketId);
+        
         // ✅ التحقق من وجود التذكرة
         const snapshot = await db.ref(`tickets/${ticketId}`).once('value');
         const ticket = snapshot.val();
@@ -10112,34 +10189,80 @@ async function deleteTicketAfterChat(ticketId) {
             return;
         }
         
-        // ✅ نقل التذكرة إلى السجل
-        await db.ref(`tickets_history/${ticketId}`).set({
-            ...ticket,
-            deletedAt: new Date().toISOString(),
-            deletedBy: 'system_auto',
-            deletedReason: ticket.endedReason || 'inactivity'
-        });
+        // ✅ التحقق من الصلاحية (المستخدم نفسه أو مدير)
+        const isOwner = ticket.userId === currentUser?.uid;
+        const isAdminUser = currentUser?.isAdmin === true || currentUser?.role === 'admin';
         
-        // ✅ حذف التذكرة من التذاكر النشطة
-        await db.ref(`tickets/${ticketId}`).remove();
+        if (!isOwner && !isAdminUser) {
+            console.warn('⚠️ ليس لديك صلاحية لحذف هذه التذكرة');
+            showToast('❌ ليس لديك صلاحية لحذف هذه التذكرة');
+            return;
+        }
         
-        console.log(`🗑️ تم حذف التذكرة ${ticketId} ونقلها إلى السجل`);
+        // ✅ نقل التذكرة إلى السجل (إذا كان مديراً أو صاحبها)
+        if (isAdminUser) {
+            // المدير يحذف بشكل دائم
+            await db.ref(`tickets/${ticketId}`).remove();
+            console.log(`🗑️ تم حذف التذكرة ${ticketId} بواسطة المدير`);
+            showToast('🗑️ تم حذف التذكرة');
+        } else {
+            // المستخدم العادي ينقل إلى السجل ثم يحذف
+            try {
+                await db.ref(`tickets_history/${ticketId}`).set({
+                    ...ticket,
+                    deletedAt: new Date().toISOString(),
+                    deletedBy: currentUser?.name || 'user'
+                });
+                console.log(`📦 تم نقل التذكرة ${ticketId} إلى السجل`);
+            } catch (e) {
+                console.warn('⚠️ لا يمكن الوصول إلى tickets_history، سيتم الحذف مباشرة');
+            }
+            
+            // حذف التذكرة
+            await db.ref(`tickets/${ticketId}`).remove();
+            console.log(`🗑️ تم حذف التذكرة ${ticketId}`);
+            showToast('🗑️ تم حذف التذكرة');
+        }
         
         // ✅ تحديث الواجهات
         if (typeof loadTickets === 'function') {
             loadTickets();
         }
         
-        // ✅ إغلاق الشات
+        // ✅ إغلاق الشات إذا كان مفتوحاً
         if (currentTicketId === ticketId) {
-            ticketEnded = true;
-            closeTicketChat();
+            chatEnded = true;
+            if (typeof closeTicketChat === 'function') {
+                closeTicketChat();
+            }
         }
         
     } catch (error) {
         console.error('❌ خطأ في حذف التذكرة:', error);
+        
+        // ✅ محاولة الحذف المباشر إذا فشل النقل
+        if (error.code === 'PERMISSION_DENIED') {
+            try {
+                console.log('🔄 محاولة الحذف المباشر...');
+                await db.ref(`tickets/${ticketId}`).remove();
+                console.log('✅ تم الحذف المباشر');
+                showToast('🗑️ تم حذف التذكرة');
+                if (typeof loadTickets === 'function') {
+                    loadTickets();
+                }
+            } catch (e) {
+                console.error('❌ فشل الحذف المباشر:', e);
+                showToast('❌ لا يمكن حذف التذكرة. يرجى المحاولة لاحقاً.');
+            }
+        } else {
+            showToast('❌ حدث خطأ في حذف التذكرة');
+        }
     }
 }
+
+console.log('✅ تم تحديث دالة حذف التذكرة');
+
+
 
 // ============================================================
 //  📌 دالة بدء الشات مع المؤقت
@@ -10513,55 +10636,7 @@ window.skipRating = function() {
 
 // أضف هذا في بداية الكود مع المتغيرات الأخرى
 window.ratingSubmitted = false;
-// ============================================================
-//  دالة حذف التذكرة بعد انتهاء المحادثة (محسنة)
-// ============================================================
 
-async function deleteTicketAfterChat(ticketId) {
-    try {
-        // ✅ التحقق من وجود التذكرة
-        const snapshot = await db.ref(`tickets/${ticketId}`).once('value');
-        const ticket = snapshot.val();
-        
-        if (!ticket) {
-            console.log('ℹ️ التذكرة غير موجودة أو تم حذفها مسبقاً');
-            return;
-        }
-        
-        // ✅ نقل التذكرة إلى سجل المحادثات المنتهية (بدلاً من الحذف الفوري)
-        await db.ref(`tickets_history/${ticketId}`).set({
-            ...ticket,
-            deletedAt: new Date().toISOString(),
-            deletedBy: currentUser?.name || 'system'
-        });
-        
-        // ✅ حذف التذكرة من التذاكر النشطة
-        await db.ref(`tickets/${ticketId}`).remove();
-        
-        console.log(`🗑️ تم حذف التذكرة ${ticketId} ونقلها إلى السجل`);
-        
-        // ✅ تحديث الواجهات
-        if (typeof loadTickets === 'function') {
-            loadTickets();
-        }
-        
-        if (typeof renderTickets === 'function') {
-            renderTickets(currentTickets);
-        }
-        
-        // ✅ إغلاق الشات إذا كان مفتوحاً
-        if (currentTicketId === ticketId) {
-            chatEnded = true;
-            closeTicketChat();
-        }
-        
-        // ✅ إظهار إشعار
-        showToast('🗑️ تم حذف التذكرة بنجاح');
-        
-    } catch (error) {
-        console.error('❌ خطأ في حذف التذكرة:', error);
-    }
-}
 
 // ============================================================
 //  دالة إرسال رسالة البوت (معدلة للتأكد من الفواصل)
@@ -10607,10 +10682,9 @@ async function handleBotResponse(ticketId, userMessage) {
         const ticket = snapshot.val();
         if (!ticket || ticket.botActive === false) return;
 
-        const message = userMessage.toLowerCase().trim();
-        const programName = ticket.botProgram || '';
-        const isDirectChat = ticket.isDirectChat || false;
-
+        // ============================================================
+        //  ✅ 1. التحقق من المدير (أول حاجة)
+        // ============================================================
         const isAdminUser = await checkAdminUsername(userMessage);
         
         if (isAdminUser) {
@@ -10623,7 +10697,13 @@ async function handleBotResponse(ticketId, userMessage) {
         }
 
         // ============================================================
-        //  ✅ 1. التحقق من "لا" لإنهاء المحادثة
+        //  ✅ 2. باقي منطق البوت
+        // ============================================================
+        const message = userMessage.toLowerCase().trim();
+        const programName = ticket.botProgram || '';
+
+        // ============================================================
+        //  ✅ 3. التحقق من "لا" لإنهاء المحادثة
         // ============================================================
         const endKeywords = ['لا', 'no', 'كفاية', 'انتهيت', 'خلص', 'بس', 'خلاص', 'مع السلامه', 'باي', 'سلام', 'كفايه', 'انتهينا', 'نهائي', 'اخر'];
         if (endKeywords.some(kw => message.includes(kw))) {
@@ -10636,14 +10716,12 @@ async function handleBotResponse(ticketId, userMessage) {
             chatEnded = true;
             updateBotStatus(false);
             
-            // ✅ عرض نافذة التقييم
             setTimeout(() => {
                 if (typeof showModernRatingModal === 'function') {
                     showModernRatingModal(ticketId);
                 }
             }, 1500);
             
-            // ✅ حذف التذكرة بعد التقييم
             setTimeout(() => {
                 if (typeof deleteTicketAfterChat === 'function') {
                     deleteTicketAfterChat(ticketId);
@@ -10654,7 +10732,7 @@ async function handleBotResponse(ticketId, userMessage) {
         }
 
         // ============================================================
-        //  ✅ 2. التحقق من "نعم" للمتابعة
+        //  ✅ 4. التحقق من "نعم" للمتابعة
         // ============================================================
         const yesKeywords = ['نعم', 'yes', 'اكيد', 'طبعا', 'موافق', 'ايوه', 'اي', 'اه', 'ايوة', 'نعم نعم', 'طبعاً'];
         if (yesKeywords.some(kw => message.includes(kw))) {
@@ -10663,7 +10741,7 @@ async function handleBotResponse(ticketId, userMessage) {
         }
 
         // ============================================================
-        //  ✅ 3. البحث في مكتبة الأسئلة (findAnswerInFAQ)
+        //  ✅ 5. البحث في مكتبة الأسئلة (findAnswerInFAQ)
         // ============================================================
         const result = findAnswerInFAQ(message, programName);
         if (result.found && result.answer) {
@@ -10674,7 +10752,7 @@ async function handleBotResponse(ticketId, userMessage) {
         }
 
         // ============================================================
-        //  ✅ 4. البحث عن سعر البرنامج (من Firebase)
+        //  ✅ 6. البحث عن سعر البرنامج (من Firebase)
         // ============================================================
         const priceMatch = await checkPriceQuestion(message);
         if (priceMatch.found) {
@@ -10685,7 +10763,7 @@ async function handleBotResponse(ticketId, userMessage) {
         }
 
         // ============================================================
-        //  ✅ 5. قائمة البرامج
+        //  ✅ 7. قائمة البرامج
         // ============================================================
         if (message.includes('البرامج') || message.includes('قائمه') || message.includes('قائمة')) {
             const programsList = await getProgramsList();
@@ -10696,7 +10774,7 @@ async function handleBotResponse(ticketId, userMessage) {
         }
 
         // ============================================================
-        //  ✅ 6. قائمة المواقع
+        //  ✅ 8. قائمة المواقع
         // ============================================================
         if (message.includes('المواقع') || message.includes('مواقع') || message.includes('المشاريع')) {
             const sitesList = await getSitesListAnswer();
@@ -10707,7 +10785,7 @@ async function handleBotResponse(ticketId, userMessage) {
         }
 
         // ============================================================
-        //  ✅ 7. أسئلة عن الشركة (مباشرة)
+        //  ✅ 9. أسئلة عن الشركة (مباشرة)
         // ============================================================
         const companyKeywords = ['الشركه', 'الشركة', 'من نحن', 'تعريف', 'معلومات', 'عن الشركة', 'شركة تكنو', 'تكنو شيرك'];
         if (companyKeywords.some(kw => message.includes(kw))) {
@@ -10719,19 +10797,7 @@ async function handleBotResponse(ticketId, userMessage) {
         }
 
         // ============================================================
-        //  ✅ 8. أسئلة عن المديرين
-        // ============================================================
-        const managerKeywords = ['محمد عماد', 'عماد', 'مدير', 'CEO', 'المدير التنفيذي', 'صاحب', 'مالك', 'المؤسس', 'عبد الرحمن', 'عبدالرحمن', 'CTO', 'مدير التقنيه'];
-        if (managerKeywords.some(kw => message.includes(kw))) {
-            const managerAnswer = getManagerAnswer(message);
-            await sendBotMessage(ticketId, managerAnswer);
-            await sendBotMessage(ticketId, '📋 هل لديك أي سؤال آخر؟ اكتب "نعم" للمتابعة أو "لا" لإنهاء المحادثة.');
-            resetInactivityTimer(ticketId);
-            return;
-        }
-
-        // ============================================================
-        //  ✅ 9. إذا لم توجد إجابة
+        //  ✅ 10. إذا لم توجد إجابة
         // ============================================================
         await sendBotMessage(ticketId, '⚠️ عذراً، لم أستطع فهم سؤالك بالكامل.');
         await sendBotMessage(ticketId, '💡 يرجى إعادة صياغة السؤال بشكل أوضح، أو اكتب "مساعدة" للحصول على قائمة بالأسئلة المتاحة.');
@@ -18952,14 +19018,11 @@ async function loadProgramQuestionsForTicket(ticketId, programName) {
     }
 }
 
-   // ============================================================
-//  دالة تحميل التذاكر - المصححة
-// ============================================================
-
-async function loadTickets() {
+ async function loadTickets() {
     // ✅ التحقق من تسجيل الدخول
     if (!currentUser) {
         console.warn('⚠️ لا يوجد مستخدم مسجل الدخول');
+        showToast('❌ الرجاء تسجيل الدخول أولاً');
         return;
     }
     
@@ -18970,40 +19033,69 @@ async function loadTickets() {
     }
     
     try {
-        const snapshot = await db.ref('tickets').once('value');
-        const allTickets = snapshot.val();
-        const ticketsList = [];
+        let ticketsList = [];
         
-        if (allTickets) {
-            for (let id in allTickets) {
-                const ticket = allTickets[id];
-                // ✅ عرض التذاكر للمستخدم الحالي أو للمدير
-                if (isAdmin() || ticket.userId === currentUser.uid) {
-                    ticketsList.push({ id, ...ticket });
+        // ✅ إذا كان المدير، يشوف كل التذاكر
+        if (isAdmin()) {
+            const snapshot = await db.ref('tickets').once('value');
+            const allTickets = snapshot.val();
+            
+            if (allTickets) {
+                for (let id in allTickets) {
+                    ticketsList.push({ id, ...allTickets[id] });
+                }
+            }
+        } else {
+            // ✅ المستخدم العادي يشوف تذاكره فقط
+            const snapshot = await db.ref('tickets')
+                .orderByChild('userId')
+                .equalTo(currentUser.uid)
+                .once('value');
+            
+            const userTickets = snapshot.val();
+            
+            if (userTickets) {
+                for (let id in userTickets) {
+                    ticketsList.push({ id, ...userTickets[id] });
                 }
             }
         }
         
+        // ✅ ترتيب التذاكر من الأحدث إلى الأقدم
+        ticketsList.sort((a, b) => {
+            return new Date(b.createdAt) - new Date(a.createdAt);
+        });
+        
         currentTickets = ticketsList;
         
-        // ✅ التحقق من وجود دالة renderTickets
+        // ✅ عرض التذاكر
         if (typeof renderTickets === 'function') {
             renderTickets(currentTickets);
         } else {
             console.warn('⚠️ دالة renderTickets غير موجودة');
         }
         
+        // ✅ تحديث عدد التذاكر
         if (typeof updateTicketsCount === 'function') {
             updateTicketsCount();
         }
         
+        // ✅ التحقق من حالة التذاكر
         if (typeof checkAndUpdateTicketStatus === 'function') {
             checkAndUpdateTicketStatus();
         }
         
+        console.log(`✅ تم تحميل ${ticketsList.length} تذكرة`);
+        
     } catch (error) {
         console.error('❌ خطأ في تحميل التذاكر:', error);
-        showToast('❌ خطأ في تحميل التذاكر');
+        
+        // ✅ رسالة خطأ مفهومة
+        if (error.message && error.message.includes('permission_denied')) {
+            showToast('❌ ليس لديك صلاحية لعرض التذاكر. يرجى تسجيل الدخول كمدير.');
+        } else {
+            showToast('❌ خطأ في تحميل التذاكر: ' + error.message);
+        }
     }
 }
 
