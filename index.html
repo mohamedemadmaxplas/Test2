@@ -4982,6 +4982,122 @@
 .upload-progress-modal .btn-group .btn-danger:hover {
     background: #dc2626;
 }
+/* ==================== أنماط عداد المساحة التخزينية ==================== */
+
+/* ✅ شريط التقدم مع تأثير متحرك */
+#storageBar {
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6, #3b82f6);
+    background-size: 200% 100%;
+    transition: width 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+#storageBar.animated {
+    animation: storageShimmer 2s linear infinite;
+}
+
+@keyframes storageShimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+/* ✅ حالة شريط التقدم عند القرب من الامتلاء */
+#storageBar.warning {
+    background: linear-gradient(90deg, #f59e0b, #f97316);
+}
+
+#storageBar.danger {
+    background: linear-gradient(90deg, #ef4444, #dc2626);
+    animation: storagePulse 1s ease-in-out infinite;
+}
+
+@keyframes storagePulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+/* ✅ تنسيق بطاقة السعة */
+.storage-card {
+    background: white;
+    border-radius: 16px;
+    padding: 12px 16px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    min-width: 200px;
+}
+
+.storage-card .storage-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #eff6ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #3b82f6;
+}
+
+.storage-card .storage-used {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.storage-card .storage-total {
+    font-size: 13px;
+    color: #94a3b8;
+}
+
+.storage-card .storage-percent {
+    font-size: 11px;
+    font-weight: 700;
+    color: #3b82f6;
+    background: #eff6ff;
+    padding: 2px 10px;
+    border-radius: 20px;
+}
+
+.storage-card .storage-bar-track {
+    width: 100%;
+    height: 5px;
+    background: #f1f5f9;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 8px;
+}
+
+.storage-card .storage-bar-fill {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.storage-card .storage-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 4px;
+}
+
+.storage-card .storage-details span {
+    font-size: 10px;
+    color: #94a3b8;
+}
+
+.storage-card .storage-status {
+    font-size: 10px;
+}
+
+.storage-card .storage-status .available {
+    color: #22c55e;
+}
+
+.storage-card .storage-status .warning {
+    color: #f59e0b;
+}
+
+.storage-card .storage-status .full {
+    color: #ef4444;
+}
 
     </style>
 </head>
@@ -5842,52 +5958,91 @@
 <!-- ==================== صفحة رفع الملفات ==================== -->
 <div id="filesPage" class="hidden page-container py-8">
     <div class="container mx-auto px-4">
-        <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
+        <!-- رأس الصفحة -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
             <h2 class="text-2xl font-bold text-gray-800">
                 <i class="fas fa-cloud-upload-alt text-blue-600 ml-2"></i> رفع الملفات
-                <span id="filesCount" class="text-sm text-gray-500 font-normal mr-2"></span>
+                <span id="filesCount" class="text-sm text-gray-500 font-normal mr-2">(0)</span>
             </h2>
-            <div class="flex items-center gap-3">
-                <span id="storageInfo" class="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
-                    <i class="fas fa-database ml-1"></i> السعة: <span id="storageUsedText">0</span> / <span id="storageTotalText">غير محدود</span>
-                </span>
-                <button onclick="openUploadModal()" class="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition flex items-center gap-2">
-                    <i class="fas fa-plus"></i> رفع ملف جديد
+            
+            <!-- السعة التخزينية وزر الرفع -->
+            <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                <!-- ✅ بطاقة السعة التخزينية المحسنة -->
+                <div class="bg-white rounded-2xl shadow-md px-4 py-3 border border-gray-100 min-w-[200px] flex-1 sm:flex-none">
+                    <div class="flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center">
+                                <i class="fas fa-database text-blue-500 text-sm"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-400">المساحة المستخدمة</p>
+                                <p class="text-sm font-bold text-gray-700">
+                                    <span id="storageUsedText">0</span> / <span id="storageTotalText">2 GB</span>
+                                </p>
+                            </div>
+                        </div>
+                        <span id="storageUsagePercent" class="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-full">0%</span>
+                    </div>
+                    <!-- ✅ شريط التقدم -->
+                    <div class="w-full h-2 bg-gray-100 rounded-full mt-2 overflow-hidden">
+                        <div id="storageBar" class="h-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full transition-all duration-700 ease-out" style="width: 0%"></div>
+                    </div>
+                    <!-- ✅ تفاصيل إضافية -->
+                    <div class="flex justify-between items-center mt-1.5">
+                        <span class="text-[10px] text-gray-400">
+                            <i class="fas fa-file ml-1"></i> <span id="fileCountDisplay">0</span> ملف
+                        </span>
+                        <span class="text-[10px] text-gray-400" id="storageStatusText">
+                            <i class="fas fa-check-circle text-green-500 ml-1"></i> متاح
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- ✅ زر رفع ملف جديد -->
+                <button onclick="openUploadModal()" class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-2.5 rounded-full hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-[1.02] whitespace-nowrap">
+                    <i class="fas fa-plus-circle"></i>
+                    <span class="hidden sm:inline">رفع ملف جديد</span>
+                    <span class="sm:hidden">رفع</span>
                 </button>
             </div>
         </div>
 
-        <!-- فلتر الملفات -->
+        <!-- ✅ أزرار الفلتر -->
         <div class="flex flex-wrap gap-2 mb-6">
-            <button onclick="filterFiles('all')" class="filter-btn px-4 py-2 rounded-full bg-blue-600 text-white text-sm" data-filter="all">
+            <button onclick="filterFiles('all')" class="filter-btn px-4 py-2 rounded-full bg-blue-600 text-white text-sm transition-all duration-300 shadow-sm hover:shadow-md" data-filter="all">
                 <i class="fas fa-list ml-1"></i> الكل
             </button>
-            <button onclick="filterFiles('image')" class="filter-btn px-4 py-2 rounded-full bg-gray-200 text-gray-700 hover:bg-blue-100 text-sm" data-filter="image">
+            <button onclick="filterFiles('image')" class="filter-btn px-4 py-2 rounded-full bg-gray-100 text-gray-700 hover:bg-blue-100 text-sm transition-all duration-300" data-filter="image">
                 <i class="fas fa-image ml-1"></i> صور
             </button>
-            <button onclick="filterFiles('document')" class="filter-btn px-4 py-2 rounded-full bg-gray-200 text-gray-700 hover:bg-blue-100 text-sm" data-filter="document">
+            <button onclick="filterFiles('document')" class="filter-btn px-4 py-2 rounded-full bg-gray-100 text-gray-700 hover:bg-blue-100 text-sm transition-all duration-300" data-filter="document">
                 <i class="fas fa-file-alt ml-1"></i> مستندات
             </button>
-            <button onclick="filterFiles('video')" class="filter-btn px-4 py-2 rounded-full bg-gray-200 text-gray-700 hover:bg-blue-100 text-sm" data-filter="video">
+            <button onclick="filterFiles('video')" class="filter-btn px-4 py-2 rounded-full bg-gray-100 text-gray-700 hover:bg-blue-100 text-sm transition-all duration-300" data-filter="video">
                 <i class="fas fa-video ml-1"></i> فيديو
             </button>
-            <button onclick="filterFiles('audio')" class="filter-btn px-4 py-2 rounded-full bg-gray-200 text-gray-700 hover:bg-blue-100 text-sm" data-filter="audio">
+            <button onclick="filterFiles('audio')" class="filter-btn px-4 py-2 rounded-full bg-gray-100 text-gray-700 hover:bg-blue-100 text-sm transition-all duration-300" data-filter="audio">
                 <i class="fas fa-music ml-1"></i> صوت
             </button>
-            <button onclick="filterFiles('other')" class="filter-btn px-4 py-2 rounded-full bg-gray-200 text-gray-700 hover:bg-blue-100 text-sm" data-filter="other">
+            <button onclick="filterFiles('other')" class="filter-btn px-4 py-2 rounded-full bg-gray-100 text-gray-700 hover:bg-blue-100 text-sm transition-all duration-300" data-filter="other">
                 <i class="fas fa-file ml-1"></i> أخرى
             </button>
         </div>
 
-        <!-- قائمة الملفات -->
-        <div id="filesList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        <!-- ✅ قائمة الملفات -->
+        <div id="filesList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <!-- سيتم عرض الملفات هنا بواسطة JavaScript -->
+        </div>
 
-        <!-- رسالة عدم وجود ملفات -->
-        <div id="noFilesMessage" class="hidden text-center py-12">
-            <i class="fas fa-cloud-upload-alt text-6xl text-gray-300 mb-4"></i>
-            <p class="text-gray-500 text-lg">لا توجد ملفات مرفوعة</p>
-            <button onclick="openUploadModal()" class="mt-4 bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition">
-                <i class="fas fa-plus ml-2"></i> رفع أول ملف
+        <!-- ✅ رسالة عدم وجود ملفات -->
+        <div id="noFilesMessage" class="hidden text-center py-16">
+            <div class="w-24 h-24 mx-auto bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                <i class="fas fa-cloud-upload-alt text-5xl text-gray-300"></i>
+            </div>
+            <p class="text-gray-500 text-lg font-medium">لا توجد ملفات مرفوعة</p>
+            <p class="text-gray-400 text-sm mt-1">قم برفع ملفاتك الأولى الآن</p>
+            <button onclick="openUploadModal()" class="mt-4 bg-blue-600 text-white px-6 py-2.5 rounded-full hover:bg-blue-700 transition-all duration-300 shadow-md hover:shadow-lg flex items-center gap-2 mx-auto">
+                <i class="fas fa-plus"></i> رفع أول ملف
             </button>
         </div>
     </div>
@@ -6739,32 +6894,25 @@ async function sha256(text) {
         return null;
     }
 }
-async function testPassword() {
-    const result = await verifyAdminPassword('011441000mo');
-    console.log('🔐 نتيجة التحقق:', result);
-}
 
 async function checkAdminUsername(userMessage) {
     try {
         console.log('🔍 جاري التحقق من اليوزرنيم:', userMessage);
         
-        // ✅ جلب الهاش المخزن من Firebase
-        const snapshot = await db.ref('admin/username').once('value');
+        // ✅ جلب اسم المستخدم من المسار الصحيح
+        const snapshot = await db.ref('settings/admin/username').once('value');
         const storedHash = snapshot.val();
         
-        console.log('📦 الهاش المخزن:', storedHash);
+        console.log('📦 الهاش المخزن (من settings/admin/username):', storedHash);
         
         if (!storedHash) {
-            console.warn('⚠️ لا يوجد يوزرنيم مدير مخزن في Firebase');
+            console.warn('⚠️ لا يوجد يوزرنيم في settings/admin/username');
             return false;
         }
         
-        // ✅ تشفير النص اللي كتبه المستخدم
         const inputHash = await sha256(userMessage);
-        
         console.log('🔑 الهاش المدخل:', inputHash);
         
-        // ✅ مقارنة الهاشات
         const isMatch = (inputHash === storedHash);
         console.log('✅ هل هناك تطابق؟', isMatch);
         
@@ -6777,7 +6925,6 @@ async function checkAdminUsername(userMessage) {
 }
 
 function openAdminPasswordModal() {
-    // ✅ إزالة أي نافذة موجودة
     const existing = document.getElementById('adminPasswordModal');
     if (existing) existing.remove();
     
@@ -6822,7 +6969,6 @@ function openAdminPasswordModal() {
     
     document.body.appendChild(modal);
     
-    // ✅ التركيز على حقل الإدخال
     setTimeout(() => {
         const input = modal.querySelector('#adminPasswordInput');
         if (input) {
@@ -6832,40 +6978,33 @@ function openAdminPasswordModal() {
 }
 
 
-
-
 async function verifyAdminPassword(inputPassword) {
     try {
         console.log('🔍 جاري التحقق من الباسورد:', inputPassword);
         
-        // ✅ التحقق من وجود الباسورد
         if (!inputPassword || inputPassword.trim() === '') {
             console.warn('⚠️ الباسورد فارغ');
             return false;
         }
         
-        // ✅ جلب الهاش المخزن من Firebase
-        const snapshot = await db.ref('admin/password').once('value');
+        // ✅ جلب الباسورد من المسار الصحيح
+        const snapshot = await db.ref('settings/admin/password').once('value');
         const storedHash = snapshot.val();
         
-        console.log('📦 الهاش المخزن:', storedHash);
+        console.log('📦 الهاش المخزن (من settings/admin/password):', storedHash);
         
-        // ✅ التحقق من وجود الهاش
         if (!storedHash) {
-            console.warn('⚠️ لا يوجد باسورد في Firebase');
+            console.warn('⚠️ لا يوجد باسورد في settings/admin/password');
             showToast('❌ كلمة المرور غير مسجلة في النظام');
             return false;
         }
         
-        // ✅ تشفير كلمة المرور المدخلة
         const inputHash = await sha256(inputPassword.trim());
         console.log('🔑 الهاش المدخل:', inputHash);
         
-        // ✅ مقارنة الهاشات
         const isMatch = (inputHash === storedHash);
         console.log('✅ هل هناك تطابق؟', isMatch);
         
-        // ✅ إرجاع النتيجة (true/false)
         return isMatch;
         
     } catch (error) {
@@ -6875,80 +7014,52 @@ async function verifyAdminPassword(inputPassword) {
     }
 }
 
+
 async function verifyAdminPasswordFromBot() {
     const modal = document.getElementById('adminPasswordModal');
-    if (!modal) {
-        showToast('❌ لم يتم العثور على نافذة كلمة المرور');
-        return;
-    }
+    if (!modal) return;
     
     const input = modal.querySelector('#adminPasswordInput');
-    if (!input) {
-        showToast('❌ لم يتم العثور على حقل كلمة المرور');
-        return;
-    }
-    
-    const password = input.value.trim();
-    console.log('🔍 الباسورد المدخل من النافذة:', password);
+    const password = input?.value?.trim();
     
     if (!password) {
         showToast('❌ الرجاء إدخال كلمة المرور');
-        input.focus();
         return;
     }
     
-    const btn = modal.querySelector('button');
-    if (btn) {
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin ml-2"></i> جاري التحقق...';
-    }
+    const isValid = await window.verifyAdminPassword(password);
     
-    try {
-        const isValid = await verifyAdminPassword(password);
-        console.log('✅ نتيجة التحقق النهائية:', isValid);
+    if (isValid) {
+        // ✅ تحديث المستخدم في Firebase
+        await db.ref(`users/${currentUser.uid}`).update({
+            role: 'admin',
+            isAdmin: true,
+            activatedAt: new Date().toISOString()
+        });
         
-        if (isValid === true) {
-            // ✅ تفعيل المدير
-            if (currentUser) {
-                await db.ref(`users/${currentUser.uid}`).update({
-                    role: 'admin',
-                    isAdmin: true,
-                    activatedAt: new Date().toISOString()
-                });
-                currentUser.role = 'admin';
-                currentUser.isAdmin = true;
-                localStorage.setItem('currentUser', JSON.stringify(currentUser));
-            }
-            
-            modal.remove();
-            showToast('✅ تم تفعيل وضع المدير بنجاح! 👑');
-            updateHomeUI();
-            updateSidebarUI();
-            
-            setTimeout(() => {
-                showAdminPanel();
-            }, 500);
-            
-        } else {
-            showToast('❌ كلمة المرور غير صحيحة');
+        // ✅ تحديث currentUser
+        currentUser.role = 'admin';
+        currentUser.isAdmin = true;
+        
+        // ✅ حفظ في localStorage
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        
+        // ✅ تحديث الواجهات
+        await updateHomeUI();
+        await updateSidebarUI();
+        await updateMyAccountUI();
+        
+        modal.remove();
+        showToast('✅ تم تفعيل وضع المدير بنجاح! 👑');
+        showAdminPanel();
+    } else {
+        showToast('❌ كلمة المرور غير صحيحة');
+        if (input) {
             input.value = '';
             input.focus();
-            if (btn) {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-unlock ml-2"></i> تأكيد';
-            }
-        }
-    } catch (error) {
-        console.error('❌ خطأ في التحقق:', error);
-        showToast('❌ حدث خطأ في التحقق');
-        if (btn) {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-unlock ml-2"></i> تأكيد';
         }
     }
 }
-
-
 
 
 async function activateUserAsAdmin(uid) {
@@ -6976,9 +7087,9 @@ async function activateUserAsAdmin(uid) {
         showToast('✅ تم تفعيل المدير بنجاح! 👑');
         
         // ✅ تحديث الواجهات
-        updateHomeUI();
-        updateSidebarUI();
-        updateMyAccountUI();
+        await updateHomeUI();
+        await updateSidebarUI();
+        await updateMyAccountUI();
         
         return true;
         
@@ -7622,37 +7733,52 @@ function closeScreenFullscreen() {
             }
         }
 
-        function isAdmin() {
-    return currentUser && (currentUser.role === 'admin' || currentUser.isAdmin === true);
+      function isAdmin() {
+    // ✅ التحقق من وجود المستخدم
+    if (!currentUser || !currentUser.uid) return false;
+    
+    // ✅ التحقق من الصلاحية من currentUser (الذي يتم تحديثه من Firebase)
+    return currentUser.isAdmin === true || currentUser.role === 'admin';
 }
 
-
-async function testAdminFlow() {
-    console.log('🧪 بدء اختبار تدفق المدير...');
-    
-    // 1. اختبار اليوزرنيم
-    const usernameResult = await checkAdminUsername('adminmohamed011');
-    console.log('🧪 نتيجة اليوزرنيم:', usernameResult);
-    
-    // 2. اختبار الباسورد
-    const passwordResult = await verifyAdminPassword('011441000mo');
-    console.log('🧪 نتيجة الباسورد:', passwordResult);
-    
-    // 3. النتيجة النهائية
-    if (usernameResult === true && passwordResult === true) {
-        console.log('✅ ✅ ✅ كل شيء يعمل!');
-        showToast('✅ كل شيء يعمل! جرب في الشات الآن');
-    } else {
-        console.log('❌ هناك مشكلة في التحقق');
-        showToast('❌ هناك مشكلة في التحقق');
+async function getStoredAdminPassword() {
+    try {
+        console.log('🔍 جاري جلب الباسورد المخزن...');
+        const snapshot = await db.ref('settings/admin/password').once('value');
+        const storedHash = snapshot.val();
+        
+        console.log('📦 الباسورد المخزن في Firebase:');
+        console.log(storedHash);
+        
+        if (storedHash) {
+            console.log('✅ تم جلب الباسورد بنجاح');
+            showToast('✅ تم جلب الباسورد المخزن (شوف الكونسول)');
+            return storedHash;
+        } else {
+            console.log('❌ لا يوجد باسورد مخزن في Firebase');
+            showToast('❌ لا يوجد باسورد مخزن');
+            return null;
+        }
+    } catch (error) {
+        console.error('❌ خطأ في جلب الباسورد:', error);
+        showToast('❌ حدث خطأ: ' + error.message);
+        return null;
     }
-    
-    return { usernameResult, passwordResult };
 }
-
 
         document.addEventListener('DOMContentLoaded', function() {
     const ticketModal = document.getElementById('ticketModal');
+     const savedUser = localStorage.getItem('currentUser');
+    if (savedUser) {
+        try {
+            currentUser = JSON.parse(savedUser);
+            // ✅ التحقق من صلاحية المدير من Firebase
+            verifyAdminStatusOnLoad();
+        } catch (e) {
+            console.warn('⚠️ خطأ في تحميل المستخدم:', e);
+            currentUser = null;
+        }
+    }
     if (ticketModal) {
         const observer = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) {
@@ -7670,6 +7796,17 @@ async function testAdminFlow() {
 document.addEventListener('DOMContentLoaded', function() {
     const botBtn = document.getElementById('botFloatBtn');
     const botContainer = document.getElementById('botFloatContainer');
+    const savedUser = localStorage.getItem('currentUser');
+    if (savedUser) {
+        try {
+            currentUser = JSON.parse(savedUser);
+            // ✅ التحقق من صلاحية المدير من Firebase
+            verifyAdminStatusOnLoad();
+        } catch (e) {
+            console.warn('⚠️ خطأ في تحميل المستخدم:', e);
+            currentUser = null;
+        }
+    }
 
     if (!botBtn || !botContainer) return;
 
@@ -8019,6 +8156,9 @@ document.addEventListener('DOMContentLoaded', function() {
         loadFiles();
     }
     const hasFile = checkFileFromURL();
+if (currentUser) {
+        verifyAdminStatusFromFirebase();
+    }
 });
 
 
@@ -8921,14 +9061,8 @@ function addNewFAQ(question, answer) {
     return false;
 }
 
-// =============================================
-//  6. دوال شات التذكرة
-// =============================================
-
-
-
 // ============================================================
-//  دالة فتح شات التذكرة - المصححة
+//  دالة فتح شات التذكرة - النسخة الكاملة المعدلة
 // ============================================================
 
 function openTicketChat(ticketId) {
@@ -8968,7 +9102,19 @@ function openTicketChat(ticketId) {
     
     if (adminNotice) adminNotice.classList.add('hidden');
     if (chatInput) chatInput.disabled = false;
-    if (adminBtn) adminBtn.innerHTML = '<i class="fas fa-user-cog"></i> دخول المدير';
+    
+    // ✅ التحكم في ظهور زر "دخول المدير" بناءً على صلاحية المستخدم
+    if (adminBtn) {
+        if (isAdmin()) {
+            // ✅ إذا كان المستخدم مديراً، يظهر الزر
+            adminBtn.style.display = 'inline-block';
+            adminBtn.innerHTML = '<i class="fas fa-user-cog"></i> دخول المدير';
+            adminBtn.className = 'bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition text-sm';
+        } else {
+            // ✅ إذا كان المستخدم عادياً، يخفي الزر
+            adminBtn.style.display = 'none';
+        }
+    }
     
     // ✅ تحميل بيانات التذكرة
     if (typeof loadTicketChatData === 'function') {
@@ -8985,6 +9131,57 @@ function openTicketChat(ticketId) {
                 </div>
             `;
         }
+    }
+    
+    // ✅ بدء مؤقت عدم النشاط (إذا كانت الدالة موجودة)
+    if (typeof startInactivityTimer === 'function') {
+        startInactivityTimer(ticketId);
+    }
+    
+    // ✅ الاستماع للرسائل الجديدة لإعادة ضبط المؤقت
+    if (typeof db !== 'undefined' && db) {
+        const messagesRef = db.ref(`tickets/${ticketId}/messages`);
+        messagesRef.off('child_added'); // إزالة المستمع القديم
+        messagesRef.on('child_added', (snapshot) => {
+            const msg = snapshot.val();
+            // ✅ إذا كانت الرسالة من المستخدم (ليس بوت وليس نظام)
+            if (msg && msg.senderId !== 'bot' && !msg.isSystem && msg.senderId === currentUser?.uid) {
+                if (typeof resetInactivityTimer === 'function') {
+                    resetInactivityTimer(ticketId);
+                }
+            }
+        });
+    }
+    
+    console.log(`✅ تم فتح شات التذكرة: ${ticketId}`);
+}
+
+
+// ==================== التحقق من صلاحية المدير عند تحميل الصفحة ====================
+async function verifyAdminStatusFromFirebase() {
+    if (!currentUser || !currentUser.uid) return;
+    
+    try {
+        const snapshot = await db.ref(`users/${currentUser.uid}`).once('value');
+        const userData = snapshot.val();
+        
+        if (userData) {
+            // ✅ تحديث currentUser من Firebase
+            currentUser.isAdmin = userData.isAdmin === true || userData.role === 'admin';
+            currentUser.role = userData.role || 'user';
+            
+            // ✅ حفظ في localStorage
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            
+            // ✅ تحديث الواجهات
+            updateHomeUI();
+            updateSidebarUI();
+            updateMyAccountUI();
+            
+            console.log('✅ تم التحقق من صلاحية المدير من Firebase:', currentUser.isAdmin);
+        }
+    } catch (error) {
+        console.error('❌ خطأ في التحقق من صلاحية المدير:', error);
     }
 }
 // ============================================================
@@ -10173,7 +10370,7 @@ async function closeTicketDueToInactivity(ticketId) {
 }
 
 // ============================================================
-//  إصلاح دالة حذف التذكرة - النسخة النهائية
+//  دالة حذف التذكرة - النسخة المعدلة
 // ============================================================
 
 async function deleteTicketAfterChat(ticketId) {
@@ -10189,36 +10386,34 @@ async function deleteTicketAfterChat(ticketId) {
             return;
         }
         
-        // ✅ التحقق من الصلاحية (المستخدم نفسه أو مدير)
+        // ✅ التحقق من الصلاحية
         const isOwner = ticket.userId === currentUser?.uid;
         const isAdminUser = currentUser?.isAdmin === true || currentUser?.role === 'admin';
         
+        // ✅ المستخدم العادي يمكنه حذف تذاكره الخاصة فقط
         if (!isOwner && !isAdminUser) {
             console.warn('⚠️ ليس لديك صلاحية لحذف هذه التذكرة');
             showToast('❌ ليس لديك صلاحية لحذف هذه التذكرة');
             return;
         }
         
-        // ✅ نقل التذكرة إلى السجل (إذا كان مديراً أو صاحبها)
-        if (isAdminUser) {
-            // المدير يحذف بشكل دائم
-            await db.ref(`tickets/${ticketId}`).remove();
-            console.log(`🗑️ تم حذف التذكرة ${ticketId} بواسطة المدير`);
-            showToast('🗑️ تم حذف التذكرة');
-        } else {
-            // المستخدم العادي ينقل إلى السجل ثم يحذف
-            try {
-                await db.ref(`tickets_history/${ticketId}`).set({
-                    ...ticket,
-                    deletedAt: new Date().toISOString(),
-                    deletedBy: currentUser?.name || 'user'
-                });
-                console.log(`📦 تم نقل التذكرة ${ticketId} إلى السجل`);
-            } catch (e) {
-                console.warn('⚠️ لا يمكن الوصول إلى tickets_history، سيتم الحذف مباشرة');
+        // ✅ إذا كان المدير أو صاحب التذكرة
+        if (isAdminUser || isOwner) {
+            // ✅ نقل التذكرة إلى السجل (اختياري للمدير)
+            if (isAdminUser) {
+                try {
+                    await db.ref(`tickets_history/${ticketId}`).set({
+                        ...ticket,
+                        deletedAt: new Date().toISOString(),
+                        deletedBy: currentUser?.name || 'admin'
+                    });
+                    console.log(`📦 تم نقل التذكرة ${ticketId} إلى السجل`);
+                } catch (e) {
+                    console.warn('⚠️ لا يمكن الوصول إلى tickets_history، سيتم الحذف مباشرة');
+                }
             }
             
-            // حذف التذكرة
+            // ✅ حذف التذكرة
             await db.ref(`tickets/${ticketId}`).remove();
             console.log(`🗑️ تم حذف التذكرة ${ticketId}`);
             showToast('🗑️ تم حذف التذكرة');
@@ -10240,7 +10435,7 @@ async function deleteTicketAfterChat(ticketId) {
     } catch (error) {
         console.error('❌ خطأ في حذف التذكرة:', error);
         
-        // ✅ محاولة الحذف المباشر إذا فشل النقل
+        // ✅ محاولة الحذف المباشر إذا فشل
         if (error.code === 'PERMISSION_DENIED') {
             try {
                 console.log('🔄 محاولة الحذف المباشر...');
@@ -10259,9 +10454,6 @@ async function deleteTicketAfterChat(ticketId) {
         }
     }
 }
-
-console.log('✅ تم تحديث دالة حذف التذكرة');
-
 
 
 // ============================================================
@@ -10311,10 +10503,8 @@ function showFileDownloadPage(fileId) {
     loadFileForDownload(fileId);
 }
 
-// ==================== تحميل بيانات الملف للعرض (معدل - يدعم الزوار) ====================
 async function loadFileForDownload(fileId) {
     try {
-        // ✅ محاولة قراءة الملف مباشرة (حتى لو مش مسجل)
         const snapshot = await db.ref(`files/${fileId}`).once('value');
         const file = snapshot.val();
         
@@ -10323,45 +10513,42 @@ async function loadFileForDownload(fileId) {
             return;
         }
         
-        // ✅ التحقق من الرؤية (حتى للزوار)
-        // إذا كان الملف عام (public) => يسمح للكل
-        // إذا كان خاص (private) => فقط صاحب الملف أو مدير
-        // إذا كان مدير (admin) => فقط المدير
-        
+        // ✅ ✅ التحقق من الرؤية
         const isOwner = currentUser && file.userId === currentUser.uid;
         const isAdminUser = currentUser && isAdmin();
         const isPublic = file.visibility === 'public';
         
-        if (file.visibility === 'private' && !isOwner && !isAdminUser) {
-            showDownloadPrivate();
-            return;
-        }
-        
-        if (file.visibility === 'admin' && !isAdminUser) {
-            showDownloadError('هذا الملف مخصص للمدير فقط');
-            return;
-        }
-        
-        // ✅ إذا كان عام أو المالك أو المدير => يعرض الملف
-        if (isPublic || isOwner || isAdminUser) {
-            // حفظ البيانات
-            downloadFileData = file;
-            downloadFileId = fileId;
-            
-            // عرض البيانات
+        // ✅ ✅ الصلاحية للتحميل:
+        // 1. عام (public) => أي شخص
+        // 2. خاص (private) => فقط المالك أو المدير
+        // 3. مدير (admin) => فقط المدير
+        if (isPublic) {
+            // ✅ عام: أي شخص يتحمله
             displayFileDownloadInfo(file);
             
-            // ✅ تحديث عدد التحميلات (حتى لو مش مسجل)
+            // ✅ تحديث عدد التحميلات
             try {
                 await db.ref(`files/${fileId}/downloads`).transaction((current) => {
                     return (current || 0) + 1;
                 });
             } catch (e) {
-                console.log('⚠️ تحديث التحميلات فشل (مش مهم)');
+                console.log('⚠️ تحديث التحميلات فشل');
+            }
+        } else if (isOwner || isAdminUser) {
+            // ✅ مالك أو مدير
+            displayFileDownloadInfo(file);
+            
+            // ✅ تحديث عدد التحميلات
+            try {
+                await db.ref(`files/${fileId}/downloads`).transaction((current) => {
+                    return (current || 0) + 1;
+                });
+            } catch (e) {
+                console.log('⚠️ تحديث التحميلات فشل');
             }
         } else {
             // ❌ غير مسموح
-            showDownloadError('ليس لديك صلاحية لعرض هذا الملف');
+            showDownloadError('ليس لديك صلاحية لتحميل هذا الملف');
         }
         
     } catch (error) {
@@ -11594,7 +11781,14 @@ function addNewFAQWithProgram(question, answer, programName) {
     return false;
 }
 
+// استبدل دالة toggleTicketChatAdmin الموجودة بهذه النسخة
 function toggleTicketChatAdmin() {
+    // ✅ التحقق من صلاحية المدير من Firebase
+    if (!isAdmin()) {
+        showToast('❌ ليس لديك صلاحيات المدير');
+        return;
+    }
+    
     isAdminMode = !isAdminMode;
     const notice = document.getElementById('adminModeNotice');
     const btn = document.getElementById('adminToggleBtn');
@@ -11657,26 +11851,7 @@ function showHomePage() {
     updateHomeUI();
     updateSidebarUI();
 }
-        // =============================================
-//  تعديل دالة التحقق من كلمة سر المدير
-// =============================================
-function verifyAdminPassword() {
-    const input = document.getElementById('adminPasswordInput');
-    const password = input.value.trim();
-    
-    if (password === '01144') {
-        document.getElementById('adminLockScreen').classList.add('hidden');
-        document.getElementById('adminDashboard').classList.remove('hidden');
-        loadAdminDashboard();
-        loadAdminPrograms();      // ✅ جديد: تحميل البرامج
-        loadAdminUsers();         // ✅ جديد: تحميل المستخدمين
-        showToast('👑 مرحباً بك في لوحة المدير');
-    } else {
-        showToast('❌ كلمة السر غير صحيحة');
-        input.value = '';
-        input.focus();
-    }
-}
+       
 
    // ============================================================
 //  دالة تحميل لوحة المدير - النسخة الكاملة مع التقييمات
@@ -11865,43 +12040,113 @@ const STORAGE_LIMITS = {
 // ==================== حساب المساحة المستخدمة ====================
 function getStorageUsed() {
     let total = 0;
+    
+    // ✅ ✅ حساب حجم ملفات المستخدم فقط
     currentFiles.forEach(file => {
-        if (file.userId === currentUser?.uid || isAdmin()) {
+        // ✅ ✅ المستخدم يرى فقط ملفاته
+        if (file.userId === currentUser?.uid) {
             total += file.size || 0;
         }
     });
+    
     return total;
 }
 
-// ==================== الحصول على الحد الأقصى للمستخدم الحالي ====================
 function getStorageLimit() {
-    if (isAdmin()) return STORAGE_LIMITS.admin;
-    return STORAGE_LIMITS.user;
+    // ✅ ✅ المدير: غير محدود
+    if (isAdmin()) return Infinity;
+    
+    // ✅ ✅ المستخدم العادي: 2 جيجابايت
+    return 2 * 1024 * 1024 * 1024; // 2 GB
 }
 
 // ==================== التحقق من المساحة المتاحة ====================
 function hasStorageSpace(fileSize) {
+    // ✅ ✅ المدير: مساحة غير محدودة
     if (isAdmin()) return true;
+    
     const used = getStorageUsed();
-    const limit = getStorageLimit();
-    return (used + fileSize) <= limit;
+    const limit = getStorageLimit(); // 2 GB للمستخدم العادي
+    
+    // ✅ ✅ التحقق من أن المساحة المتبقية كافية
+    const remaining = limit - used;
+    const hasSpace = remaining >= fileSize;
+    
+    if (!hasSpace) {
+        const remainingMB = (remaining / (1024 * 1024)).toFixed(2);
+        showToast(`❌ لا توجد مساحة كافية! المتبقي: ${remainingMB} MB`);
+    }
+    
+    return hasSpace;
 }
 
 
-// ==================== تحميل الملفات ====================
+// ==================== تحميل الملفات (مع تخزين مؤقت لصلاحيات المستخدمين) ====================
+let userRolesCache = {}; // ✅ تخزين مؤقت لصلاحيات المستخدمين
+
 async function loadFiles() {
+    // ✅ التحقق من تسجيل الدخول
+    if (!currentUser || !currentUser.uid) {
+        showToast('❌ الرجاء تسجيل الدخول أولاً');
+        return;
+    }
+    
     try {
         const snapshot = await db.ref('files').once('value');
         const allFiles = snapshot.val();
         const filesList = [];
+        const isAdminUser = isAdmin();
         
         if (allFiles) {
+            // ✅ جمع جميع معرفات المستخدمين لتحميل صلاحياتهم دفعة واحدة
+            const userIds = new Set();
             for (let id in allFiles) {
                 const file = allFiles[id];
-                // عرض الملفات التي أنشأها المستخدم أو العامة أو الخاصة بالمدير
-                if (file.userId === currentUser?.uid || 
-                    file.visibility === 'public' || 
-                    (isAdmin() && file.visibility === 'admin')) {
+                if (file.userId) {
+                    userIds.add(file.userId);
+                }
+            }
+            
+            // ✅ تحميل صلاحيات جميع المستخدمين دفعة واحدة (إذا لم تكن في الكاش)
+            const usersToLoad = [];
+            for (let uid of userIds) {
+                if (!userRolesCache[uid]) {
+                    usersToLoad.push(uid);
+                }
+            }
+            
+            // ✅ تحميل بيانات المستخدمين
+            if (usersToLoad.length > 0) {
+                const usersSnapshot = await db.ref('users').once('value');
+                const usersData = usersSnapshot.val();
+                if (usersData) {
+                    for (let uid in usersData) {
+                        const userData = usersData[uid];
+                        userRolesCache[uid] = {
+                            isAdmin: userData?.isAdmin === true || userData?.role === 'admin',
+                            name: userData?.name || 'مستخدم'
+                        };
+                    }
+                }
+            }
+            
+            // ✅ فلترة الملفات
+            for (let id in allFiles) {
+                const file = allFiles[id];
+                const isOwner = file.userId === currentUser.uid;
+                const fileOwnerData = userRolesCache[file.userId] || { isAdmin: false };
+                
+                let canView = false;
+                
+                if (isOwner) {
+                    // ✅ المالك يرى ملفاته دائماً
+                    canView = true;
+                } else if (isAdminUser && fileOwnerData.isAdmin) {
+                    // ✅ المدير يرى فقط ملفات المديرين الآخرين
+                    canView = true;
+                }
+                
+                if (canView) {
                     filesList.push({ id, ...file });
                 }
             }
@@ -11911,18 +12156,21 @@ async function loadFiles() {
         renderFiles(currentFiles);
         updateStorageInfo();
         
+        console.log(`✅ تم تحميل ${filesList.length} ملف للمستخدم: ${currentUser.name}`);
+        console.log(`📄 نوع المستخدم: ${isAdminUser ? 'مدير' : 'عادي'}`);
+        
     } catch (error) {
-        console.error('خطأ في تحميل الملفات:', error);
+        console.error('❌ خطأ في تحميل الملفات:', error);
         showToast('❌ خطأ في تحميل الملفات');
     }
 }
 
-// ==================== عرض الملفات ====================
 function renderFiles(files) {
     const container = document.getElementById('filesList');
     const noMessage = document.getElementById('noFilesMessage');
     if (!container) return;
     
+    // ✅ فلترة الملفات حسب التصنيف
     const filtered = files.filter(file => {
         if (currentFileFilter === 'all') return true;
         return file.category === currentFileFilter;
@@ -11954,6 +12202,37 @@ function renderFiles(files) {
         const color = colorMap[file.category] || 'text-gray-500';
         const size = (file.size / 1024).toFixed(1) + ' KB';
         
+        // ✅ تحديد صلاحية الحذف
+        const isOwner = file.userId === currentUser?.uid;
+        const isAdminUser = isAdmin();
+        
+        // ✅ ✅ المدير لا يستطيع حذف ملفات المديرين الآخرين (فقط المالك)
+        // ✅ المالك فقط من يستطيع حذف ملفه
+        const canDelete = isOwner;
+        
+        // ✅ تحديد نوع الرؤية
+        let visibilityText = '';
+        let visibilityIcon = '';
+        let visibilityColor = '';
+        if (file.visibility === 'private') {
+            visibilityText = 'خاص';
+            visibilityIcon = 'fa-lock';
+            visibilityColor = 'text-gray-500';
+        } else if (file.visibility === 'admin') {
+            visibilityText = 'مدير';
+            visibilityIcon = 'fa-crown';
+            visibilityColor = 'text-yellow-500';
+        } else if (file.visibility === 'public') {
+            visibilityText = 'رابط عام';
+            visibilityIcon = 'fa-link';
+            visibilityColor = 'text-blue-500';
+        }
+        
+        // ✅ ✅ تحديد ما إذا كان الملف لمدير آخر (لإظهار علامة)
+        const isAdminFile = userRolesCache[file.userId]?.isAdmin === true;
+        const isCurrentUserAdmin = isAdminUser;
+        const showAdminBadge = isAdminFile && !isOwner && isCurrentUserAdmin;
+        
         return `
             <div class="bg-white rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all cursor-pointer border hover:border-blue-300" onclick="viewFile('${file.id}')">
                 <div class="flex items-start gap-4">
@@ -11964,20 +12243,72 @@ function renderFiles(files) {
                         <h3 class="font-bold text-gray-800 truncate">${file.displayName || file.name}</h3>
                         <p class="text-xs text-gray-500">${size}</p>
                         <p class="text-xs text-gray-400">${new Date(file.uploadedAt).toLocaleDateString('ar-EG')}</p>
+                        ${isOwner ? '<p class="text-xs text-blue-500">📁 ملفك الشخصي</p>' : ''}
+                        ${showAdminBadge ? '<p class="text-xs text-yellow-500">👑 ملف مدير آخر</p>' : ''}
+                        ${!isOwner && !showAdminBadge && isAdminUser ? '<p class="text-xs text-gray-400">📄 ملف مستخدم</p>' : ''}
                     </div>
                 </div>
                 <div class="mt-3 flex items-center justify-between">
                     <span class="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">${file.category || 'أخرى'}</span>
-                    <span class="text-xs ${file.visibility === 'public' ? 'text-green-500' : file.visibility === 'admin' ? 'text-yellow-500' : 'text-gray-500'}">
-                        <i class="fas ${file.visibility === 'public' ? 'fa-globe' : file.visibility === 'admin' ? 'fa-crown' : 'fa-lock'}"></i>
-                        ${file.visibility === 'public' ? 'عام' : file.visibility === 'admin' ? 'مدير' : 'خاص'}
-                    </span>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs ${visibilityColor}" title="${file.visibility === 'public' ? 'رابط عام للتحميل' : file.visibility === 'admin' ? 'للمدير فقط' : 'خاص'}">
+                            <i class="fas ${visibilityIcon}"></i>
+                            ${visibilityText}
+                        </span>
+                        ${canDelete ? `
+                            <button onclick="event.stopPropagation(); deleteFileDirect('${file.id}')" 
+                                    class="text-red-500 hover:text-red-700 text-sm p-1 rounded-full hover:bg-red-50 transition" 
+                                    title="حذف الملف">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        ` : `
+                            <span class="text-xs text-gray-400" title="ليس لديك صلاحية حذف هذا الملف">
+                                <i class="fas fa-lock"></i>
+                            </span>
+                        `}
+                    </div>
                 </div>
             </div>
         `;
     }).join('');
+}
+
+// ==================== حذف الملف مباشرة (للمالك فقط) ====================
+function deleteFileDirect(fileId) {
+    if (!fileId) {
+        showToast('❌ لا يوجد ملف للحذف');
+        return;
+    }
     
-    updateFilesCount(files);
+    const file = currentFiles.find(f => f.id === fileId);
+    if (!file) {
+        showToast('❌ الملف غير موجود');
+        return;
+    }
+    
+    // ✅ ✅ التحقق من الصلاحية: المالك فقط
+    const isOwner = file.userId === currentUser?.uid;
+    
+    if (!isOwner) {
+        showToast('❌ ليس لديك صلاحية حذف هذا الملف (المالك فقط)');
+        return;
+    }
+    
+    if (!confirm(`⚠️ هل أنت متأكد من حذف ملفك "${file.displayName}"؟`)) {
+        return;
+    }
+    
+    showToast('⏳ جاري حذف الملف...');
+    
+    db.ref(`files/${fileId}`).remove()
+        .then(() => {
+            showToast('✅ تم حذف الملف بنجاح');
+            loadFiles();
+        })
+        .catch((error) => {
+            console.error('❌ خطأ في حذف الملف:', error);
+            showToast('❌ حدث خطأ في حذف الملف: ' + error.message);
+        });
 }
 
 // ==================== تحديث عدد الملفات ====================
@@ -11988,21 +12319,97 @@ function updateFilesCount(files) {
     }
 }
 
-// ==================== تحديث معلومات السعة التخزينية ====================
+// ==================== تحديث معلومات السعة التخزينية (محسنة) ====================
 function updateStorageInfo() {
     const used = getStorageUsed();
     const limit = getStorageLimit();
     const usedText = document.getElementById('storageUsedText');
     const totalText = document.getElementById('storageTotalText');
+    const storageBar = document.getElementById('storageBar');
+    const usagePercent = document.getElementById('storageUsagePercent');
+    const fileCountDisplay = document.getElementById('fileCountDisplay');
+    const statusText = document.getElementById('storageStatusText');
     
+    // ✅ تحديث النص المستخدم
     if (usedText) {
-        usedText.innerText = (used / (1024 * 1024)).toFixed(2) + ' MB';
+        const usedInMB = used / (1024 * 1024);
+        if (used === 0) {
+            usedText.innerText = '0';
+        } else if (usedInMB < 1) {
+            usedText.innerText = (used / 1024).toFixed(0);
+        } else if (usedInMB < 1024) {
+            usedText.innerText = usedInMB.toFixed(1);
+        } else {
+            usedText.innerText = (usedInMB / 1024).toFixed(2);
+        }
     }
+    
+    // ✅ تحديث النص الكلي
     if (totalText) {
-        if (limit === Infinity) {
+        if (isAdmin()) {
             totalText.innerText = 'غير محدود';
         } else {
-            totalText.innerText = (limit / (1024 * 1024 * 1024)).toFixed(0) + ' GB';
+            const limitInGB = limit / (1024 * 1024 * 1024);
+            if (limitInGB >= 1) {
+                totalText.innerText = limitInGB.toFixed(0) + ' GB';
+            } else {
+                totalText.innerText = (limit / (1024 * 1024)).toFixed(0) + ' MB';
+            }
+        }
+    }
+    
+    // ✅ تحديث شريط التقدم
+    if (storageBar) {
+        const percent = limit === Infinity ? 0 : Math.min((used / limit) * 100, 100);
+        storageBar.style.width = percent + '%';
+        
+        // ✅ تغيير لون الشريط حسب النسبة
+        storageBar.classList.remove('warning', 'danger', 'animated');
+        if (percent > 90) {
+            storageBar.classList.add('danger');
+        } else if (percent > 70) {
+            storageBar.classList.add('warning');
+        } else if (percent > 0 && percent < 100) {
+            storageBar.classList.add('animated');
+        }
+    }
+    
+    // ✅ تحديث نسبة الاستخدام
+    if (usagePercent) {
+        const percent = limit === Infinity ? 0 : Math.min((used / limit) * 100, 100);
+        usagePercent.innerText = percent.toFixed(0) + '%';
+        
+        // ✅ تغيير لون النسبة
+        if (percent > 90) {
+            usagePercent.className = 'text-xs font-bold text-red-600 bg-red-50 px-2 py-1 rounded-full';
+        } else if (percent > 70) {
+            usagePercent.className = 'text-xs font-bold text-yellow-600 bg-yellow-50 px-2 py-1 rounded-full';
+        } else {
+            usagePercent.className = 'text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-full';
+        }
+    }
+    
+    // ✅ تحديث عدد الملفات
+    if (fileCountDisplay) {
+        const count = currentFiles ? currentFiles.length : 0;
+        fileCountDisplay.innerText = count;
+    }
+    
+    // ✅ تحديث حالة المساحة
+    if (statusText) {
+        const percent = limit === Infinity ? 0 : Math.min((used / limit) * 100, 100);
+        if (isAdmin()) {
+            statusText.innerHTML = '<i class="fas fa-crown text-yellow-500 ml-1"></i> غير محدود';
+            statusText.className = 'text-[10px] text-yellow-600';
+        } else if (percent > 95) {
+            statusText.innerHTML = '<i class="fas fa-exclamation-triangle text-red-500 ml-1"></i> ممتلئ تقريباً';
+            statusText.className = 'text-[10px] text-red-600';
+        } else if (percent > 80) {
+            statusText.innerHTML = '<i class="fas fa-exclamation-circle text-yellow-500 ml-1"></i> مساحة محدودة';
+            statusText.className = 'text-[10px] text-yellow-600';
+        } else {
+            statusText.innerHTML = '<i class="fas fa-check-circle text-green-500 ml-1"></i> متاح';
+            statusText.className = 'text-[10px] text-green-600';
         }
     }
 }
@@ -12040,7 +12447,6 @@ function closeUploadModal(event) {
     }
 }
 
-// ==================== دالة رفع الملف مع شريط التقدم ====================
 async function uploadFileWithProgress(event) {
     event.preventDefault();
     
@@ -12060,15 +12466,16 @@ async function uploadFileWithProgress(event) {
     }
     
     const file = fileInput.files[0];
-    const maxSize = isAdmin() ? Infinity : 10 * 1024 * 1024;
+    const maxSize = isAdmin() ? Infinity : 10 * 1024 * 1024; // 10 MB للمستخدم العادي
     
+    // ✅ التحقق من حجم الملف
     if (file.size > maxSize && !isAdmin()) {
         showToast('❌ حجم الملف يتجاوز الحد الأقصى (10 ميجابايت)');
         return;
     }
     
-    if (!hasStorageSpace(file.size) && !isAdmin()) {
-        showToast('❌ لا توجد مساحة تخزين كافية');
+    // ✅ التحقق من المساحة المتاحة
+    if (!hasStorageSpace(file.size)) {
         return;
     }
     
@@ -12093,7 +12500,7 @@ async function uploadFileWithProgress(event) {
             visibility: visibility,
             data: base64,
             userId: currentUser.uid,
-            userName: currentUser.name || currentUser.username,
+            userName: currentUser.name || currentUser.username || 'مستخدم',
             uploadedAt: new Date().toISOString(),
             downloads: 0
         };
@@ -12127,6 +12534,14 @@ async function uploadFileWithProgress(event) {
         setTimeout(() => {
             loadFiles();
         }, 1000);
+        
+        // ✅ عرض رسالة نجاح مع نوع الرؤية
+        const visibilityText = {
+            'public': 'عام (يمكن للجميع التحميل عبر الرابط)',
+            'private': 'خاص (فقط أنت من يرى الملف)',
+            'admin': 'للمدير فقط'
+        };
+        showToast(`✅ تم رفع الملف "${displayName}" بنجاح! (${visibilityText[visibility] || 'خاص'})`);
         
     } catch (error) {
         console.error('خطأ في رفع الملف:', error);
@@ -12178,11 +12593,30 @@ function fileToBase64WithProgress(file) {
     });
 }
 
-// ==================== عرض الملف في النافذة (معدل) ====================
 function viewFile(fileId) {
     const file = currentFiles.find(f => f.id === fileId);
     if (!file) {
         showToast('❌ الملف غير موجود');
+        return;
+    }
+    
+    // ✅ التحقق من الصلاحية لعرض الملف
+    const isOwner = file.userId === currentUser?.uid;
+    const isAdminUser = isAdmin();
+    
+    // ✅ ✅ المدير يشوف ملفات المديرين الآخرين فقط
+    let canView = false;
+    if (isOwner) {
+        canView = true;
+    } else if (isAdminUser) {
+        const fileOwnerIsAdmin = userRolesCache[file.userId]?.isAdmin === true;
+        if (fileOwnerIsAdmin) {
+            canView = true;
+        }
+    }
+    
+    if (!canView) {
+        showToast('❌ ليس لديك صلاحية لعرض هذا الملف');
         return;
     }
     
@@ -12192,10 +12626,22 @@ function viewFile(fileId) {
     document.getElementById('fileViewTitle').innerText = file.displayName || file.name;
     document.getElementById('fileViewName').innerText = file.displayName || file.name;
     document.getElementById('fileViewSize').innerText = 'الحجم: ' + (file.size / 1024).toFixed(1) + ' KB';
-    document.getElementById('fileViewUploader').innerText = 'رفع بواسطة: ' + (file.userName || 'مستخدم');
-    document.getElementById('fileViewDate').innerText = 'التاريخ: ' + new Date(file.uploadedAt).toLocaleString('ar-EG');
     
-    // ✅ الرابط الصحيح
+    // ✅ عرض اسم المالك
+    const uploaderName = file.userName || 'مستخدم غير معروف';
+    const fileOwnerIsAdmin = userRolesCache[file.userId]?.isAdmin === true;
+    let ownerBadge = '';
+    if (isOwner) {
+        ownerBadge = ' <span style="color: #22c55e; font-size: 12px;">(أنت)</span>';
+    } else if (fileOwnerIsAdmin && isAdminUser) {
+        ownerBadge = ' <span style="color: #f59e0b; font-size: 12px;">(مدير)</span>';
+    }
+    
+    document.getElementById('fileViewUploader').innerHTML = `
+        رفع بواسطة: <strong>${uploaderName}</strong> ${ownerBadge}
+    `;
+    
+    document.getElementById('fileViewDate').innerText = 'التاريخ: ' + new Date(file.uploadedAt).toLocaleString('ar-EG');
     document.getElementById('fileDownloadLink').value = getFileDownloadLink(fileId);
     
     const iconMap = {
@@ -12206,6 +12652,18 @@ function viewFile(fileId) {
         'other': 'fa-file'
     };
     document.getElementById('fileViewIcon').className = 'fas ' + (iconMap[file.category] || 'fa-file') + ' text-6xl text-blue-500';
+    
+    // ✅ ✅ زر الحذف يظهر فقط للمالك
+    const deleteBtn = document.querySelector('#fileViewModal .btn-danger') || 
+                      document.querySelector('#fileViewModal button:last-child');
+    if (deleteBtn) {
+        if (isOwner) {
+            deleteBtn.style.display = 'inline-block';
+            deleteBtn.innerText = '🗑️ حذف';
+        } else {
+            deleteBtn.style.display = 'none';
+        }
+    }
     
     modal.classList.add('active');
 }
@@ -12273,7 +12731,7 @@ function copyFileLink() {
     });
 }
 
-// ==================== حذف الملف ====================
+// ==================== حذف الملف (للمالك فقط) ====================
 function deleteFile() {
     if (!currentViewFileId) {
         showToast('❌ لا يوجد ملف للحذف');
@@ -12286,24 +12744,31 @@ function deleteFile() {
         return;
     }
     
-    // التحقق من الصلاحية
-    if (file.userId !== currentUser?.uid && !isAdmin()) {
-        showToast('❌ ليس لديك صلاحية حذف هذا الملف');
+    // ✅ ✅ التحقق من الصلاحية: المالك فقط
+    const isOwner = file.userId === currentUser?.uid;
+    
+    if (!isOwner) {
+        showToast('❌ ليس لديك صلاحية حذف هذا الملف (المالك فقط)');
         return;
     }
     
-    if (confirm(`⚠️ هل أنت متأكد من حذف الملف "${file.displayName}"؟`)) {
-        db.ref(`files/${currentViewFileId}`).remove().then(() => {
-            showToast('✅ تم حذف الملف');
+    if (!confirm(`⚠️ هل أنت متأكد من حذف ملفك "${file.displayName}"؟`)) {
+        return;
+    }
+    
+    showToast('⏳ جاري حذف الملف...');
+    
+    db.ref(`files/${currentViewFileId}`).remove()
+        .then(() => {
+            showToast('✅ تم حذف الملف بنجاح');
             closeFileViewModal();
             loadFiles();
-        }).catch((error) => {
-            console.error('خطأ في حذف الملف:', error);
-            showToast('❌ حدث خطأ في حذف الملف');
+        })
+        .catch((error) => {
+            console.error('❌ خطأ في حذف الملف:', error);
+            showToast('❌ حدث خطأ في حذف الملف: ' + error.message);
         });
-    }
 }
-
 // ==================== التحقق من رابط الملف في URL (معدل) ====================
 function checkFileFromURL() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -13104,34 +13569,72 @@ async function deleteRating(ratingId) {
     }
 }
 
-        function updateHomeUI() {
+ async function updateHomeUI() {
     const loginArea = document.getElementById('loginBtnAreaHome');
     const userArea = document.getElementById('userAreaHome');
     const userInitial = document.getElementById('userInitialHome');
     const userName = document.getElementById('userNameHome');
     const roleHome = document.getElementById('userRoleHome');
     
-    if (currentUser) {
+    // ✅ التحقق من وجود المستخدم
+    if (currentUser && currentUser.uid) {
+        // ✅ جلب البيانات من Firebase مباشرة (وليس localStorage)
+        try {
+            const snapshot = await db.ref(`users/${currentUser.uid}`).once('value');
+            const userData = snapshot.val();
+            
+            if (userData) {
+                // ✅ تحديث currentUser من Firebase
+                const isAdmin = userData.isAdmin === true || userData.role === 'admin';
+                currentUser.isAdmin = isAdmin;
+                currentUser.role = isAdmin ? 'admin' : 'user';
+                // ✅ تحديث localStorage ولكن بالبيانات الصحيحة من Firebase
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            } else {
+                // ✅ إذا لم توجد بيانات في Firebase، المستخدم ليس مديراً
+                currentUser.isAdmin = false;
+                currentUser.role = 'user';
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            }
+        } catch (error) {
+            console.error('❌ خطأ في جلب بيانات المستخدم من Firebase:', error);
+            // ✅ في حالة الخطأ، نستخدم البيانات المخزنة ولكن نتحقق منها
+            if (currentUser.isAdmin === undefined) {
+                currentUser.isAdmin = false;
+                currentUser.role = 'user';
+            }
+        }
+        
+        // ✅ عرض بيانات المستخدم
         loginArea.classList.add('hidden');
         userArea.classList.remove('hidden');
         userInitial.innerText = (currentUser.name || 'U').charAt(0).toUpperCase();
-        userName.innerText = currentUser.name || currentUser.username;
+        userName.innerText = currentUser.name || currentUser.username || 'مستخدم';
         
-        // ✅ التحقق من Firebase قبل إظهار "مدير"
-        if (currentUser.isAdmin === true || currentUser.role === 'admin') {
+        // ✅ التحقق من صلاحية المدير (من Firebase بعد التحديث)
+        const isAdmin = currentUser.isAdmin === true || currentUser.role === 'admin';
+        
+        // ✅ إظهار أو إخفاء كلمة "مدير"
+        if (isAdmin) {
             roleHome.classList.remove('hidden');
             roleHome.innerText = '👑 مدير';
+            roleHome.style.display = 'inline-block';
         } else {
             roleHome.classList.add('hidden');
+            roleHome.style.display = 'none';
         }
+        
     } else {
+        // ✅ المستخدم غير مسجل الدخول
         loginArea.classList.remove('hidden');
         userArea.classList.add('hidden');
         roleHome.classList.add('hidden');
+        roleHome.style.display = 'none';
     }
-    updateSidebarUI();
+    
+    // ✅ تحديث القائمة الجانبية أيضاً
+    await updateSidebarUI();
 }
-
         function updateDashboardUI() {
             if (currentUser) {
                 document.getElementById('dashboardUserName').innerText = currentUser.name || currentUser.username;
@@ -13143,37 +13646,118 @@ async function deleteRating(ratingId) {
             }
         }
 
-        function updateSidebarUI() {
-            const sidebarUserName = document.getElementById('sidebarUserName');
-            const sidebarUserStatus = document.getElementById('sidebarUserStatus');
-            const sidebarUserRole = document.getElementById('sidebarUserRole');
-            const sidebarAuthSection = document.getElementById('sidebarAuthSection');
-            const sidebarLogoutSection = document.getElementById('sidebarLogoutSection');
-            const sidebarAdminSection = document.getElementById('sidebarAdminSection');
+ async function updateSidebarUI() {
+    const sidebarUserName = document.getElementById('sidebarUserName');
+    const sidebarUserStatus = document.getElementById('sidebarUserStatus');
+    const sidebarUserRole = document.getElementById('sidebarUserRole');
+    const sidebarAuthSection = document.getElementById('sidebarAuthSection');
+    const sidebarLogoutSection = document.getElementById('sidebarLogoutSection');
+    const sidebarAdminSection = document.getElementById('sidebarAdminSection');
+    
+    // ✅ التحقق من وجود المستخدم
+    if (currentUser && currentUser.uid) {
+        // ✅ جلب البيانات من Firebase
+        try {
+            const snapshot = await db.ref(`users/${currentUser.uid}`).once('value');
+            const userData = snapshot.val();
             
-            if (currentUser) {
-                sidebarUserName.innerText = currentUser.name || 'مستخدم';
-                sidebarUserStatus.innerText = 'مسجل الدخول';
-                sidebarAuthSection.classList.add('hidden');
-                sidebarLogoutSection.classList.remove('hidden');
+            if (userData) {
+                const isAdmin = userData.isAdmin === true || userData.role === 'admin';
+                currentUser.isAdmin = isAdmin;
+                currentUser.role = isAdmin ? 'admin' : 'user';
+                // ✅ تحديث localStorage ولكن بالبيانات الصحيحة
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            }
+        } catch (error) {
+            console.error('❌ خطأ في جلب بيانات المستخدم:', error);
+        }
+        
+        // ✅ عرض اسم المستخدم
+        sidebarUserName.innerText = currentUser.name || 'مستخدم';
+        sidebarUserStatus.innerText = 'مسجل الدخول';
+        
+        // ✅ ✅ إخفاء أزرار تسجيل الدخول وإنشاء حساب
+        sidebarAuthSection.classList.add('hidden');
+        sidebarAuthSection.style.display = 'none';
+        
+        // ✅ ✅ إظهار زر تسجيل الخروج
+        sidebarLogoutSection.classList.remove('hidden');
+        sidebarLogoutSection.style.display = 'block';
+        
+        // ✅ التحقق من صلاحية المدير
+        const isAdmin = currentUser.isAdmin === true || currentUser.role === 'admin';
+        
+        if (isAdmin) {
+            sidebarUserRole.classList.remove('hidden');
+            sidebarUserRole.innerText = '👑 مدير';
+            sidebarUserRole.style.display = 'block';
+            sidebarAdminSection.classList.remove('hidden');
+            sidebarAdminSection.style.display = 'block';
+        } else {
+            sidebarUserRole.classList.add('hidden');
+            sidebarUserRole.style.display = 'none';
+            sidebarAdminSection.classList.add('hidden');
+            sidebarAdminSection.style.display = 'none';
+        }
+    } else {
+        // ✅ المستخدم غير مسجل الدخول
+        sidebarUserName.innerText = 'زائر';
+        sidebarUserStatus.innerText = 'غير مسجل الدخول';
+        sidebarUserRole.classList.add('hidden');
+        sidebarUserRole.style.display = 'none';
+        
+        // ✅ ✅ إظهار أزرار تسجيل الدخول وإنشاء حساب
+        sidebarAuthSection.classList.remove('hidden');
+        sidebarAuthSection.style.display = 'block';
+        
+        // ✅ ✅ إخفاء زر تسجيل الخروج
+        sidebarLogoutSection.classList.add('hidden');
+        sidebarLogoutSection.style.display = 'none';
+        
+        sidebarAdminSection.classList.add('hidden');
+        sidebarAdminSection.style.display = 'none';
+    }
+}
+
+async function verifyAdminStatusOnLoad() {
+    // ✅ إذا كان هناك مستخدم مسجل
+    if (currentUser && currentUser.uid) {
+        try {
+            const snapshot = await db.ref(`users/${currentUser.uid}`).once('value');
+            const userData = snapshot.val();
+            
+            if (userData) {
+                // ✅ تحديث الصلاحية من Firebase
+                const isAdmin = userData.isAdmin === true || userData.role === 'admin';
+                currentUser.isAdmin = isAdmin;
+                currentUser.role = isAdmin ? 'admin' : 'user';
                 
-                if (isAdmin()) {
-                    sidebarUserRole.classList.remove('hidden');
-                    sidebarUserRole.innerText = '👑 مدير';
-                    sidebarAdminSection.classList.remove('hidden');
-                } else {
-                    sidebarUserRole.classList.add('hidden');
-                    sidebarAdminSection.classList.add('hidden');
-                }
+                // ✅ حفظ التحديث في localStorage
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                
+                console.log('✅ تم التحقق من صلاحية المدير من Firebase:', isAdmin);
             } else {
-                sidebarUserName.innerText = 'زائر';
-                sidebarUserStatus.innerText = 'غير مسجل الدخول';
-                sidebarUserRole.classList.add('hidden');
-                sidebarAuthSection.classList.remove('hidden');
-                sidebarLogoutSection.classList.add('hidden');
-                sidebarAdminSection.classList.add('hidden');
+                // ✅ إذا لم توجد بيانات، المستخدم ليس مديراً
+                currentUser.isAdmin = false;
+                currentUser.role = 'user';
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            }
+        } catch (error) {
+            console.error('❌ خطأ في التحقق من صلاحية المدير:', error);
+            // ✅ في حالة الخطأ، نضع المستخدم كـ user عادي
+            if (currentUser) {
+                currentUser.isAdmin = false;
+                currentUser.role = 'user';
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
             }
         }
+        
+        // ✅ تحديث الواجهات
+        await updateHomeUI();
+        await updateSidebarUI();
+        await updateMyAccountUI();
+    }
+}
 
         // ==================== دوال السايد بار ====================
         function toggleSidebarWithAnimation(btn) {
@@ -13194,7 +13778,8 @@ async function deleteRating(ratingId) {
             navigator.clipboard.writeText(text).then(() => { showToast('✅ تم نسخ: ' + text); });
         }
 
- async function login() {
+ // ==================== دوال تسجيل الدخول ====================
+async function login() {
     let identifier = document.getElementById('loginUsername').value.trim();
     const password = document.getElementById('loginPassword').value;
     
@@ -13205,69 +13790,45 @@ async function deleteRating(ratingId) {
     
     try {
         let email = identifier;
-        
         if (!identifier.includes('@')) {
             email = `${identifier}@tecno.com`;
-            showToast(`⏳ جاري تسجيل الدخول باستخدام: ${email}`);
         }
         
         const userCredential = await auth.signInWithEmailAndPassword(email, password);
         const user = userCredential.user;
         
-        console.log('✅ تم تسجيل الدخول بنجاح، UID:', user.uid);
-        
+        // ✅ جلب البيانات من Firebase مباشرة
         const snapshot = await db.ref(`users/${user.uid}`).once('value');
         const userData = snapshot.val();
         
-        if (userData) {
-            currentUser = {
-                uid: user.uid,
-                name: userData.name || user.displayName || 'مستخدم',
-                username: userData.username || email,
-                email: userData.email || email,
-                phone: userData.phone || '',
-                plan: userData.plan || 'free',
-                createdAt: userData.createdAt || new Date().toISOString(),
-                ...userData
-            };
-        } else {
-            currentUser = {
-                uid: user.uid,
-                name: user.displayName || 'مستخدم',
-                username: email,
-                email: user.email || email,
-                phone: '',
-                plan: 'free',
-                createdAt: new Date().toISOString()
-            };
-            
-            await db.ref(`users/${user.uid}`).set({
-                name: currentUser.name,
-                username: currentUser.username,
-                email: currentUser.email,
-                phone: currentUser.phone,
-                plan: currentUser.plan,
-                createdAt: currentUser.createdAt,
-                uid: user.uid
-            });
-        }
+        // ✅ تحديد صلاحية المدير من Firebase (وليس localStorage)
+        const isAdmin = userData?.isAdmin === true || userData?.role === 'admin';
         
+        currentUser = {
+            uid: user.uid,
+            name: userData?.name || user.displayName || 'مستخدم',
+            username: userData?.username || email,
+            email: user.email || email,
+            phone: userData?.phone || '',
+            plan: userData?.plan || 'free',
+            createdAt: userData?.createdAt || new Date().toISOString(),
+            isAdmin: isAdmin,        // ✅ من Firebase
+            role: isAdmin ? 'admin' : 'user'  // ✅ من Firebase
+        };
+        
+        // ✅ حفظ في localStorage بعد التأكد من الصلاحية
         localStorage.setItem('currentUser', JSON.stringify(currentUser));
-        await db.ref(`users/${user.uid}/lastLogin`).set(new Date().toISOString());
         
         showToast(`✅ مرحباً ${currentUser.name}`);
         
         // ✅ تحديث جميع الواجهات
-        updateHomeUI();
-        updateSidebarUI();
-        updateMyAccountUI();
+        await updateHomeUI();
+        await updateSidebarUI();
+        await updateMyAccountUI();
+        await verifyAdminStatusOnLoad();
         
         // ✅ الانتقال للصفحة المناسبة
-        if (document.getElementById('myAccountPage') && !document.getElementById('myAccountPage').classList.contains('hidden')) {
-            // إذا كنت في صفحة حسابي، ابقى فيها
-        } else {
-            showDashboard();
-        }
+        showDashboard();
         
     } catch (error) {
         console.error('❌ خطأ في تسجيل الدخول:', error);
@@ -13430,7 +13991,7 @@ auth.onAuthStateChanged(async (user) => {
 
         function prevStep(step) { showStep(step); }
 
-     async function completeRegistration() {
+   async function completeRegistration() {
     const agree = document.getElementById('agreeTerms').checked;
     if (!agree) { 
         showToast('❌ الرجاء الموافقة على الشروط'); 
@@ -13469,7 +14030,9 @@ auth.onAuthStateChanged(async (user) => {
             plan: 'free',
             createdAt: new Date().toISOString(),
             lastLogin: new Date().toISOString(),
-            uid: user.uid
+            uid: user.uid,
+            isAdmin: false,      // ✅ المستخدم الجديد ليس مديراً
+            role: 'user'         // ✅ دور المستخدم العادي
         });
         
         // ✅ تعيين المستخدم الحالي
@@ -13480,15 +14043,21 @@ auth.onAuthStateChanged(async (user) => {
             email: email,
             phone: tempUserData.phone || '',
             plan: 'free',
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
+            isAdmin: false,
+            role: 'user'
         };
         
         localStorage.setItem('currentUser', JSON.stringify(currentUser));
         
         showToast('✅ تم إنشاء الحساب بنجاح');
+        
+        // ✅ تحديث الواجهات
+        await updateHomeUI();
+        await updateSidebarUI();
+        await updateMyAccountUI();
+        
         showDashboard();
-        updateHomeUI();
-        updateSidebarUI();
         
     } catch (error) {
         console.error('❌ خطأ في إنشاء الحساب:', error);
@@ -15264,7 +15833,6 @@ function adminFilterTickets(filter) {
 }
 
 
-
 async function adminRefreshTickets() {
     try {
         const snapshot = await db.ref('tickets').once('value');
@@ -15324,10 +15892,6 @@ function adminRefreshAll() {
     showToast('🔄 تم تحديث جميع البيانات');
 }
 
-// ============================================================
-//  📌 تحميل المستخدمين في لوحة المدير - مع زر حذف
-// ============================================================
-
 async function loadAdminUsers() {
     try {
         const snapshot = await db.ref('users').once('value');
@@ -15355,12 +15919,29 @@ async function loadAdminUsers() {
         for (let uid in users) {
             const user = users[uid];
             const isAdmin = user.role === 'admin' || user.isAdmin === true;
-            const isCurrentUser = uid === currentUser?.uid; // ✅ منع حذف المستخدم الحالي
+            const isCurrentUser = uid === currentUser?.uid;
             
-            // ✅ تحديد لون الصف
+            // ✅ ✅ عرض عدد الملفات الخاصة بكل مستخدم
+            let fileCount = 0;
+            try {
+                const filesSnapshot = await db.ref('files').orderByChild('userId').equalTo(uid).once('value');
+                const files = filesSnapshot.val();
+                if (files) fileCount = Object.keys(files).length;
+            } catch (e) {
+                // تجاهل الخطأ
+            }
+            
+            // ✅ ✅ عرض عدد التذاكر الخاصة بكل مستخدم
+            let ticketCount = 0;
+            try {
+                const ticketsSnapshot = await db.ref('tickets').orderByChild('userId').equalTo(uid).once('value');
+                const tickets = ticketsSnapshot.val();
+                if (tickets) ticketCount = Object.keys(tickets).length;
+            } catch (e) {
+                // تجاهل الخطأ
+            }
+            
             const rowColor = isAdmin ? 'bg-yellow-50' : (index % 2 === 0 ? 'bg-gray-50' : 'bg-white');
-            
-            // ✅ أيقونة الحالة
             const statusIcon = isAdmin ? '👑' : '👤';
             const statusText = isAdmin ? 'مدير' : 'مستخدم';
             const statusColor = isAdmin ? 'text-yellow-600 bg-yellow-100' : 'text-blue-600 bg-blue-100';
@@ -15368,32 +15949,28 @@ async function loadAdminUsers() {
             html += `
                 <div class="flex justify-between items-center p-4 hover:bg-gray-50 border-b ${rowColor} transition-colors duration-200">
                     <div class="flex items-center gap-4 flex-1 min-w-0">
-                        <!-- الصورة الرمزية -->
                         <div class="w-10 h-10 rounded-full ${isAdmin ? 'bg-yellow-200' : 'bg-blue-200'} flex items-center justify-center text-sm font-bold ${isAdmin ? 'text-yellow-700' : 'text-blue-700'} flex-shrink-0">
                             ${(user.name || 'U').charAt(0).toUpperCase()}
                         </div>
-                        
-                        <!-- معلومات المستخدم -->
                         <div class="min-w-0 flex-1">
                             <div class="font-bold text-gray-800 text-sm sm:text-base truncate">
                                 ${user.name || 'مستخدم'}
                                 <span class="text-xs ${statusColor} px-2 py-0.5 rounded-full mr-2">
                                     ${statusIcon} ${statusText}
                                 </span>
+                                ${isCurrentUser ? '<span class="text-xs text-green-600 bg-green-100 px-2 py-0.5 rounded-full">أنت</span>' : ''}
                             </div>
                             <div class="text-xs text-gray-500 truncate">
                                 <span dir="ltr" class="font-mono">${user.username || user.email || ''}</span>
                                 ${user.phone ? `<span class="mx-2">|</span><span dir="ltr">${user.phone}</span>` : ''}
                             </div>
-                            <div class="text-xs text-gray-400 mt-0.5">
-                                <i class="fas fa-calendar-alt ml-1"></i> 
-                                ${user.createdAt ? new Date(user.createdAt).toLocaleDateString('ar-EG') : 'غير معروف'}
-                                ${user.lastLogin ? `<span class="mx-2">|</span>🕐 ${new Date(user.lastLogin).toLocaleDateString('ar-EG')}` : ''}
+                            <div class="text-xs text-gray-400 mt-0.5 flex flex-wrap gap-2">
+                                <span><i class="fas fa-file ml-1"></i> ${fileCount} ملف</span>
+                                <span><i class="fas fa-ticket ml-1"></i> ${ticketCount} تذكرة</span>
+                                <span><i class="fas fa-calendar-alt ml-1"></i> ${user.createdAt ? new Date(user.createdAt).toLocaleDateString('ar-EG') : 'غير معروف'}</span>
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- الأزرار -->
                     <div class="flex items-center gap-2 flex-shrink-0">
                         ${isCurrentUser ? `
                             <span class="text-xs text-green-600 bg-green-100 px-2 py-1 rounded-full">
@@ -15447,30 +16024,40 @@ async function deleteUser(uid) {
         return;
     }
     
-    // ✅ نافذة تأكيد مخصصة
     openCustomConfirm(
         '⚠️ هل أنت متأكد من حذف هذا المستخدم؟',
-        'سيتم حذف جميع بيانات المستخدم نهائياً! لا يمكن التراجع عن هذا الإجراء.',
+        'سيتم حذف جميع بيانات المستخدم نهائياً! (الملفات، التذاكر، والبيانات الشخصية)',
         async function(confirmed) {
             if (confirmed) {
                 try {
                     // ✅ حذف بيانات المستخدم من Realtime Database
                     await db.ref(`users/${uid}`).remove();
                     
-                    // ✅ حذف التذاكر الخاصة بالمستخدم
-                    const ticketsSnapshot = await db.ref('tickets').once('value');
+                    // ✅ حذف جميع ملفات المستخدم
+                    const filesSnapshot = await db.ref('files').orderByChild('userId').equalTo(uid).once('value');
+                    const files = filesSnapshot.val();
+                    if (files) {
+                        for (let fileId in files) {
+                            await db.ref(`files/${fileId}`).remove();
+                        }
+                        console.log(`🗑️ تم حذف ${Object.keys(files).length} ملف للمستخدم`);
+                    }
+                    
+                    // ✅ حذف جميع تذاكر المستخدم
+                    const ticketsSnapshot = await db.ref('tickets').orderByChild('userId').equalTo(uid).once('value');
                     const tickets = ticketsSnapshot.val();
                     if (tickets) {
                         for (let ticketId in tickets) {
-                            if (tickets[ticketId].userId === uid) {
-                                await db.ref(`tickets/${ticketId}`).remove();
-                            }
+                            await db.ref(`tickets/${ticketId}`).remove();
+                            // حذف رسائل الشات المرتبطة
+                            await db.ref(`tickets/${ticketId}/messages`).remove();
                         }
+                        console.log(`🗑️ تم حذف ${Object.keys(tickets).length} تذكرة للمستخدم`);
                     }
                     
                     showToast('✅ تم حذف المستخدم وجميع بياناته بنجاح');
                     
-                    // ✅ إعادة تحميل قائمة المستخدمين
+                    // ✅ إعادة تحميل القوائم
                     loadAdminUsers();
                     loadAdminDashboard();
                     
@@ -15995,27 +16582,7 @@ function cleanOldAudioData() {
             }
         }
 
-        async function updateStorageInfo() {
-            try {
-                const snapshot = await db.ref('messages').once('value');
-                const allMessages = snapshot.val();
-                let myMessagesCount = 0;
-                if (allMessages) {
-                    for (let uid in allMessages) {
-                        const msg = allMessages[uid];
-                        if (msg.from === currentUser?.username || msg.to === currentUser?.username) {
-                            myMessagesCount++;
-                        }
-                    }
-                }
-                const maxMessages = 100;
-                const percent = Math.min((myMessagesCount / maxMessages) * 100, 100);
-                document.getElementById('storageUsed').style.width = `${percent}%`;
-                document.getElementById('storageText').innerText = `${myMessagesCount} / ${maxMessages} رسالة`;
-            } catch (error) {
-                console.error('خطأ:', error);
-            }
-        }
+       
 
         function refreshMails() {
             loadMails();
@@ -19018,9 +19585,9 @@ async function loadProgramQuestionsForTicket(ticketId, programName) {
     }
 }
 
- async function loadTickets() {
+async function loadTickets() {
     // ✅ التحقق من تسجيل الدخول
-    if (!currentUser) {
+    if (!currentUser || !currentUser.uid) {
         console.warn('⚠️ لا يوجد مستخدم مسجل الدخول');
         showToast('❌ الرجاء تسجيل الدخول أولاً');
         return;
@@ -19046,10 +19613,10 @@ async function loadProgramQuestionsForTicket(ticketId, programName) {
                 }
             }
         } else {
-            // ✅ المستخدم العادي يشوف تذاكره فقط
+            // ✅ ✅ المستخدم العادي يشوف تذاكره فقط (باستخدام userId)
             const snapshot = await db.ref('tickets')
                 .orderByChild('userId')
-                .equalTo(currentUser.uid)
+                .equalTo(currentUser.uid)  // ✅ فلترة حسب userId
                 .once('value');
             
             const userTickets = snapshot.val();
@@ -19071,8 +19638,6 @@ async function loadProgramQuestionsForTicket(ticketId, programName) {
         // ✅ عرض التذاكر
         if (typeof renderTickets === 'function') {
             renderTickets(currentTickets);
-        } else {
-            console.warn('⚠️ دالة renderTickets غير موجودة');
         }
         
         // ✅ تحديث عدد التذاكر
@@ -19080,19 +19645,13 @@ async function loadProgramQuestionsForTicket(ticketId, programName) {
             updateTicketsCount();
         }
         
-        // ✅ التحقق من حالة التذاكر
-        if (typeof checkAndUpdateTicketStatus === 'function') {
-            checkAndUpdateTicketStatus();
-        }
-        
-        console.log(`✅ تم تحميل ${ticketsList.length} تذكرة`);
+        console.log(`✅ تم تحميل ${ticketsList.length} تذكرة للمستخدم: ${currentUser.name}`);
         
     } catch (error) {
         console.error('❌ خطأ في تحميل التذاكر:', error);
         
-        // ✅ رسالة خطأ مفهومة
         if (error.message && error.message.includes('permission_denied')) {
-            showToast('❌ ليس لديك صلاحية لعرض التذاكر. يرجى تسجيل الدخول كمدير.');
+            showToast('❌ ليس لديك صلاحية لعرض التذاكر');
         } else {
             showToast('❌ خطأ في تحميل التذاكر: ' + error.message);
         }
@@ -19279,25 +19838,46 @@ function stopCountdownTimers() {
 
 // ==================== حذف التذكرة من البطاقة مباشرة ====================
 async function deleteTicketFromCard(ticketId) {
-    // ✅ استخدام نافذة التأكيد المخصصة
+    // ✅ التحقق من وجود التذكرة
+    const ticket = currentTickets.find(t => t.id === ticketId);
+    if (!ticket) {
+        showToast('❌ التذكرة غير موجودة');
+        return;
+    }
+    
+    // ✅ التحقق من الصلاحية
+    const isOwner = ticket.userId === currentUser?.uid;
+    const isAdminUser = currentUser?.isAdmin === true || currentUser?.role === 'admin';
+    
+    // ✅ المستخدم العادي يمكنه حذف تذاكره الخاصة فقط
+    if (!isOwner && !isAdminUser) {
+        showToast('❌ ليس لديك صلاحية حذف هذه التذكرة');
+        return;
+    }
+    
+    // ✅ نافذة تأكيد
+    const confirmMsg = isAdminUser 
+        ? '⚠️ هل أنت متأكد من حذف هذه التذكرة؟'
+        : '⚠️ هل أنت متأكد من حذف تذكرتك؟';
+    
     openCustomConfirm(
-        '⚠️ هل أنت متأكد من حذف هذه التذكرة؟',
+        confirmMsg,
         'سيتم حذف التذكرة وجميع رسائل الشات المرتبطة بها!',
         async function(confirmed) {
             if (confirmed) {
                 try {
-                    // حذف التذكرة من Firebase
+                    // ✅ حذف التذكرة من Firebase
                     await db.ref(`tickets/${ticketId}`).remove();
                     
-                    // حذف رسائل الشات المرتبطة (إن وجدت)
+                    // ✅ حذف رسائل الشات المرتبطة
                     await db.ref(`tickets/${ticketId}/messages`).remove();
                     
                     showToast('✅ تم حذف التذكرة بنجاح');
                     
-                    // تحديث القائمة
+                    // ✅ تحديث القائمة
                     loadTickets();
                     
-                    // إذا كانت هذه التذكرة مفتوحة في الشات، أغلقها
+                    // ✅ إذا كانت هذه التذكرة مفتوحة في الشات، أغلقها
                     if (currentTicketId === ticketId) {
                         closeTicketChat();
                     }
