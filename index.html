@@ -20,6 +20,20 @@
     <link rel="icon" type="image/png" href="https://i.ibb.co/SX9y9f5m/Chat-GPT-Image-Aug-31-2026-09-29-15-AM.png">
     <link rel="shortcut icon" type="image/png" href="https://i.ibb.co/SX9y9f5m/Chat-GPT-Image-Aug-31-2026-09-29-15-AM.png">
     <link rel="apple-touch-icon" href="https://i.ibb.co/SX9y9f5m/Chat-GPT-Image-Aug-31-2026-09-29-15-AM.png">
+    <!-- OneSignal SDK -->
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function(OneSignal) {
+        await OneSignal.init({
+            appId: "95e171c0-6bd4-4fee-ba5b-7266370f947d",
+            serviceWorkerOverrideForTypical: true,
+            path: "https://the-best-academy.vercel.app/OneSignalSDKWorker.js",
+            serviceWorkerParam: { scope: "/" },
+            serviceWorkerPath: "OneSignalSDKWorker.js",
+        });
+    });
+    </script>
 
     <style>
         /* ==================== RESET & GLOBAL ==================== */
@@ -3891,7 +3905,7 @@ function checkAndRouteUser() {
     console.log('📋 Accounts available:', accounts.length);
 }
 
-function loginUser(username, password) {
+async  function loginUser(username, password) {
     console.log('🔐 Login attempt:', username);
     
     // ===== بنشوف لو هو Admin =====
@@ -4024,6 +4038,9 @@ function loginUser(username, password) {
         
         return;
     }
+
+    await registerDeviceToken();
+
     
     showToast('❌ اسم المستخدم أو كلمة المرور غير صحيحة', 'error');
 }
@@ -4101,11 +4118,6 @@ function showAddAccountFromSidebar() {
 }
 
 
-// ============================================================
-//                    NOTIFICATION TRIGGERS
-// ============================================================
-
-// 3️⃣1️⃣ دالة إرسال إشعار عند إضافة واجب جديد
 async function notifyNewHomework(homeworkId) {
     const hw = appData.homeworkForms.find(h => h.id === homeworkId);
     if (!hw) return;
@@ -4124,7 +4136,6 @@ async function notifyNewHomework(homeworkId) {
     console.log(`✅ تم إرسال إشعارات الواجب لـ ${classStudents.length} طالب`);
 }
 
-// 3️⃣2️⃣ دالة إرسال إشعار عند إضافة اختبار جديد
 async function notifyNewExam(examId) {
     const exam = appData.exams.find(e => e.id === examId);
     if (!exam) return;
@@ -4143,7 +4154,6 @@ async function notifyNewExam(examId) {
     console.log(`✅ تم إرسال إشعارات الاختبار لـ ${classStudents.length} طالب`);
 }
 
-// 3️⃣3️⃣ دالة إرسال إشعار عند إضافة اجتماع جديد
 async function notifyNewMeeting(meetingId) {
     const meeting = appData.meetings.find(m => m.id === meetingId);
     if (!meeting) return;
@@ -4162,7 +4172,6 @@ async function notifyNewMeeting(meetingId) {
     console.log(`✅ تم إرسال إشعارات الاجتماع لـ ${classStudents.length} طالب`);
 }
 
-// 3️⃣4️⃣ دالة إرسال إشعار عند كسب نقاط
 async function notifyPointsEarned(studentId, points, reason) {
     const student = appData.students.find(s => s.id === studentId);
     if (!student) return;
@@ -4177,7 +4186,6 @@ async function notifyPointsEarned(studentId, points, reason) {
     console.log(`✅ تم إرسال إشعار نقاط لـ ${student.name}`);
 }
 
-// 3️⃣5️⃣ دالة إرسال إشعار عام للفصل
 async function notifyClass(classId, title, body, data = {}) {
     const classStudents = appData.students.filter(s => s.classId === classId && s.status === 'active');
     
@@ -4193,91 +4201,44 @@ async function notifyClass(classId, title, body, data = {}) {
     console.log(`✅ تم إرسال إشعار عام لـ ${classStudents.length} طالب في الفصل`);
 }
 
-// ============================================================
-//                    FIREBASE MESSAGING SETUP
-// ============================================================
 
-// ============================================================
-//                    FIREBASE MESSAGING SETUP (معدلة)
-// ============================================================
-
-// 4️⃣3️⃣ دالة تهيئة Firebase Messaging (معدلة)
-function initFirebaseMessaging() {
-    try {
-        // نتأكد إن Firebase Messaging موجود
-        if (typeof firebase === 'undefined' || !firebase.messaging) {
-            console.warn('⚠️ Firebase Messaging not available');
-            return;
-        }
-        
-        const messaging = firebase.messaging();
-        
-        // نطلب الإذن
-        messaging.requestPermission()
-            .then(() => {
-                console.log('✅ Notification permission granted');
-                return messaging.getToken();
-            })
-            .then((token) => {
-                console.log('✅ FCM Token:', token);
-                localStorage.setItem('fcmToken', token);
-                
-                // نخزن الـ Token في Firebase
-                if (currentUser) {
-                    database.ref(`users/${currentUser.id}/fcmTokens`).push(token);
-                }
-            })
-            .catch((err) => {
-                console.error('❌ Error getting FCM token:', err);
-            });
-            
-    } catch (error) {
-        console.error('❌ Error initializing FCM:', error);
-    }
-}
-
-// ============================================================
-//                    SETUP FOREGROUND NOTIFICATIONS (معدلة)
-// ============================================================
 
 function setupForegroundNotifications() {
     try {
-        // نتأكد إن Firebase Messaging موجود
-        if (typeof firebase === 'undefined' || !firebase.messaging) {
-            console.warn('⚠️ Firebase Messaging not available, skipping notifications');
+        if (typeof OneSignal === 'undefined') {
+            console.warn('⚠️ OneSignal not available');
             return;
         }
         
-        const messaging = firebase.messaging();
-        
         // استقبال الإشعارات لما التطبيق مفتوح
-        messaging.onMessage((payload) => {
-            console.log('📨 Notification received in foreground:', payload);
+        OneSignal.Notifications.addEventListener('foregroundWillDisplay', (event) => {
+            console.log('📨 Notification received in foreground:', event);
             
-            const title = payload.notification?.title || 'The Best Academy';
-            const body = payload.notification?.body || 'لديك إشعار جديد';
+            const notification = event.notification;
+            const title = notification.title || 'The Best Academy';
+            const body = notification.body || 'لديك إشعار جديد';
             
-            // نظهر الإشعار داخل التطبيق
+            // نعرض الإشعار داخل التطبيق
             showToast(`🔔 ${title}: ${body}`, 'info');
             
-            // لو فيه تحديث للبيانات، نعمل refresh
+            // نعمل refresh للبيانات
             if (currentUser) {
                 refreshUserData();
             }
+            
+            // نمنع عرض الإشعار من المتصفح (نحن نعرضه بأنفسنا)
+            event.preventDefault();
         });
         
+        console.log('✅ OneSignal foreground notifications setup complete');
+        
     } catch (error) {
-        console.error('❌ Error setting up foreground notifications:', error);
+        console.error('❌ Error setting up OneSignal notifications:', error);
     }
 }
 
-// ============================================================
-//                    REQUEST NOTIFICATION PERMISSION (معدلة)
-// ============================================================
-
 async function requestNotificationPermission() {
     try {
-        // نتأكد إن المتصفح يدعم الإشعارات
         if (!('Notification' in window)) {
             console.warn('⚠️ This browser does not support notifications');
             localStorage.setItem('notifPermissionAsked', 'true');
@@ -4287,34 +4248,48 @@ async function requestNotificationPermission() {
             return;
         }
         
-        // نتأكد إن Firebase Messaging موجود
-        if (typeof firebase === 'undefined' || !firebase.messaging) {
-            console.warn('⚠️ Firebase Messaging not available');
-            // نطلب إذن الإشعارات العادية
-            const permission = await Notification.requestPermission();
+        // ننتظر OneSignal
+        if (typeof OneSignal === 'undefined') {
+            console.warn('⏳ OneSignal not loaded, waiting...');
+            await new Promise(resolve => {
+                const checkInterval = setInterval(() => {
+                    if (typeof OneSignal !== 'undefined') {
+                        clearInterval(checkInterval);
+                        resolve();
+                    }
+                }, 500);
+                setTimeout(resolve, 10000);
+            });
+        }
+        
+        if (typeof OneSignal === 'undefined') {
+            console.warn('⚠️ OneSignal not available');
             localStorage.setItem('notifPermissionAsked', 'true');
-            localStorage.setItem('notifPermissionGranted', permission === 'granted' ? 'true' : 'false');
+            localStorage.setItem('notifPermissionGranted', 'false');
             hideNotificationPermissionOverlay();
             checkAndRouteUser();
             return;
         }
         
-        // نطلب الإذن من Firebase Messaging
-        const messaging = firebase.messaging();
-        const permission = await messaging.requestPermission();
+        // نطلب الإذن من OneSignal
+        const permission = await OneSignal.Notifications.requestPermission({
+            modal: true,
+            modalOptions: {
+                title: '🔔 تفعيل الإشعارات',
+                message: 'نود إرسال إشعارات لك عند إضافة واجبات جديدة، اختبارات، اجتماعات، أو عند كسب نقاط جديدة.',
+                acceptButtonText: 'السماح ✅',
+                cancelButtonText: 'ليس الآن ❌',
+            }
+        });
         
-        if (permission === 'granted') {
+        console.log('✅ OneSignal permission result:', permission);
+        
+        if (permission) {
             localStorage.setItem('notifPermissionAsked', 'true');
             localStorage.setItem('notifPermissionGranted', 'true');
             
-            // نسجل الـ Device Token
-            const token = await messaging.getToken();
-            if (token) {
-                localStorage.setItem('fcmToken', token);
-                if (currentUser) {
-                    database.ref(`users/${currentUser.id}/fcmTokens`).push(token);
-                }
-            }
+            // نسجل الجهاز
+            await registerDeviceToken();
             
             showToast('✅ تم تفعيل الإشعارات', 'success');
         } else {
@@ -4335,113 +4310,125 @@ async function requestNotificationPermission() {
     }
 }
 
-
 async function registerDeviceToken() {
     try {
-        // ===== لو شغال على أندرويد (Capacitor) =====
-        if (typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform()) {
-            console.log('📱 Running on Android (Capacitor)');
-            await registerAndroidDeviceToken();
-            return;
+        // ننتظر حتى يتم تحميل OneSignal
+        if (typeof OneSignal === 'undefined') {
+            console.warn('⏳ OneSignal not loaded yet, waiting...');
+            await new Promise(resolve => {
+                const checkInterval = setInterval(() => {
+                    if (typeof OneSignal !== 'undefined') {
+                        clearInterval(checkInterval);
+                        resolve();
+                    }
+                }, 500);
+                // حد أقصى 10 ثواني
+                setTimeout(resolve, 10000);
+            });
         }
-
-        // ===== لو شغال على متصفح =====
-        if (typeof firebase === 'undefined' || !firebase.messaging) {
-            console.warn('⚠️ Firebase Messaging not available');
+        
+        if (typeof OneSignal === 'undefined') {
+            console.warn('⚠️ OneSignal not available');
             return null;
         }
         
-        const messaging = firebase.messaging();
-        const token = await messaging.getToken();
+        const userId = await OneSignal.User.getUserId();
+        console.log('✅ OneSignal User ID:', userId);
         
-        if (token) {
-            console.log('✅ Device Token:', token);
-            localStorage.setItem('fcmToken', token);
-            
-            if (currentUser) {
-                const userTokenRef = database.ref(`users/${currentUser.id}/fcmTokens`);
-                await userTokenRef.push(token);
-            }
-            
-            return token;
+        if (userId && currentUser) {
+            // نخزن الـ ID في Firebase Database عشان نقدر نرسل له إشعارات
+            await database.ref(`users/${currentUser.id}/onesignalIds`).push(userId);
+            // نخزن محلياً
+            localStorage.setItem('onesignalUserId', userId);
         }
+        return userId;
+        
     } catch (error) {
-        console.error('❌ Error getting FCM token:', error);
+        console.error('❌ Error registering device with OneSignal:', error);
         return null;
     }
 }
 
 async function sendPushNotification(accountId, title, body, data = {}) {
     try {
-        // ===== نتأكد إن Firebase Messaging موجود =====
-        if (typeof firebase === 'undefined' || !firebase.messaging) {
-            console.warn('⚠️ Firebase Messaging not available, notification not sent');
+        if (typeof OneSignal === 'undefined') {
+            console.warn('⚠️ OneSignal not available, notification not sent');
             return false;
         }
         
-        // ===== لو accountId = 'admin'، نجيب Tokens الأدمين =====
-        let tokens = [];
+        // ===== نجيب الـ User IDs =====
+        let userIds = [];
+        
         if (accountId === 'admin') {
-            // نجيب Tokens من Firebase Database
-            const adminTokensSnapshot = await database.ref('users/admin/fcmTokens').once('value');
-            const adminTokens = adminTokensSnapshot.val();
-            if (adminTokens) {
-                tokens = Object.values(adminTokens);
+            // نجيب IDs الأدمين
+            const adminIdsSnapshot = await database.ref('users/admin/onesignalIds').once('value');
+            const adminIds = adminIdsSnapshot.val();
+            if (adminIds) {
+                userIds = Object.values(adminIds);
             }
             
             // كمان نجيب من Local Storage لو فيه Admin account
-            const accounts = getAccounts();
-            const adminAccount = accounts.find(a => a.username === 'admin');
-            if (adminAccount) {
-                const localToken = localStorage.getItem('fcmToken');
-                if (localToken && !tokens.includes(localToken)) {
-                    tokens.push(localToken);
-                }
+            const localId = localStorage.getItem('onesignalUserId');
+            if (localId && !userIds.includes(localId)) {
+                userIds.push(localId);
             }
         } else {
-            // ===== نجيب Tokens الخاصة بالحساب =====
-            const tokensSnapshot = await database.ref(`users/${accountId}/fcmTokens`).once('value');
-            const tokensData = tokensSnapshot.val();
-            if (tokensData) {
-                tokens = Object.values(tokensData);
+            // نجيب IDs الخاصة بالحساب
+            const idsSnapshot = await database.ref(`users/${accountId}/onesignalIds`).once('value');
+            const idsData = idsSnapshot.val();
+            if (idsData) {
+                userIds = Object.values(idsData);
             }
         }
         
-        if (!tokens || tokens.length === 0) {
-            console.log('⚠️ No tokens found for account:', accountId);
+        if (!userIds || userIds.length === 0) {
+            console.log('⚠️ No OneSignal IDs found for account:', accountId);
             return false;
         }
         
         // ===== نجهز الـ Payload =====
-        const messaging = firebase.messaging();
+        const notification = {
+            headings: {
+                en: title,
+                ar: title
+            },
+            contents: {
+                en: body,
+                ar: body
+            },
+            data: {
+                ...data,
+                accountId: accountId,
+                timestamp: new Date().toISOString()
+            },
+            include_aliases: {
+                external_id: userIds
+            },
+            target_channel: 'push'
+        };
         
-        for (const token of tokens) {
-            try {
-                await messaging.send({
-                    to: token,
-                    notification: {
-                        title: title,
-                        body: body,
-                        icon: 'https://i.ibb.co/SX9y9f5m/Chat-GPT-Image-Aug-31-2026-09-29-15-AM.png',
-                        badge: 'https://i.ibb.co/SX9y9f5m/Chat-GPT-Image-Aug-31-2026-09-29-15-AM.png',
-                        sound: 'default'
-                    },
-                    data: {
-                        ...data,
-                        accountId: accountId,
-                        timestamp: new Date().toISOString()
-                    }
-                });
-            } catch (sendError) {
-                console.error('❌ Error sending to token:', token, sendError);
-            }
+        // ===== نرسل عن طريق API =====
+        const response = await fetch('https://onesignal.com/api/v1/notifications', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Basic os_v2_app_sxqxdqdl2rh65os3ojtdod4upxwtfs4rcfeec7n2lnzby5jgx4a4hb5gtddnh7nz5jt3hkbnlfyaoxqfwcl5t7e5nkla55asm7ufnwa'
+            },
+            body: JSON.stringify(notification)
+        });
+        
+        const result = await response.json();
+        
+        if (result.errors) {
+            console.error('❌ OneSignal API error:', result.errors);
+            return false;
         }
         
-        console.log('✅ Notification sent to account:', accountId);
+        console.log('✅ Notification sent via OneSignal:', result);
         return true;
         
     } catch (error) {
-        console.error('❌ Error sending notification:', error);
+        console.error('❌ Error sending notification via OneSignal:', error);
         return false;
     }
 }
@@ -6541,7 +6528,7 @@ function renderLoginPage() {
 
     initTheme();
 }
-     function showJoinRequestModal() {
+   async  function showJoinRequestModal() {
     const modal = document.createElement('div');
     modal.className = 'modal';
     modal.style.display = 'flex';
@@ -6640,6 +6627,9 @@ function renderLoginPage() {
         showToast('✅ تم إرسال طلب الانضمام بنجاح! سيتم مراجعته قريباً');
         modal.remove();
     });
+
+    await registerDeviceToken();
+
 }
 
        function toggleSidebar() {
@@ -7965,59 +7955,7 @@ function showPendingRequestsModal() {
     document.body.appendChild(modal);
 }
 
-// ============================================================
-//                    DETECT ANDROID ENVIRONMENT (Capacitor)
-// ============================================================
 
-// نفحص لو التطبيق شغال على أندرويد (Capacitor)
-const isAndroid = () => {
-    return typeof window !== 'undefined' && 
-           window.hasOwnProperty('capacitor') && 
-           window.capacitor?.isNativePlatform?.() === true;
-};
-
-// ============================================================
-//                    NOTIFICATIONS FOR ANDROID (Capacitor)
-// ============================================================
-
-async function registerAndroidDeviceToken() {
-    try {
-        if (typeof Capacitor === 'undefined') {
-            console.log('ℹ️ Capacitor not available, skipping native notifications');
-            return;
-        }
-
-        const permission = await Capacitor.Plugins.PushNotifications.requestPermissions();
-        console.log('📱 Permission status:', permission);
-
-        await Capacitor.Plugins.PushNotifications.register();
-        
-        Capacitor.Plugins.PushNotifications.addListener('registration', (token) => {
-            console.log('✅ Android Device Token:', token);
-            localStorage.setItem('androidFcmToken', token.value);
-            
-            if (currentUser) {
-                database.ref(`users/${currentUser.id}/fcmTokens`).push(token.value);
-            }
-        });
-
-        Capacitor.Plugins.PushNotifications.addListener('pushNotificationReceived', (notification) => {
-            console.log('📨 Notification received:', notification);
-            
-            const title = notification.title || 'The Best Academy';
-            const body = notification.body || 'لديك إشعار جديد';
-            
-            showToast(`🔔 ${title}: ${body}`, 'info');
-            
-            if (currentUser) {
-                refreshUserData();
-            }
-        });
-
-    } catch (error) {
-        console.error('❌ Error in Android notifications:', error);
-    }
-}
 
 // ==================== SHOW STUDENT DETAILS ====================
 function showStudentDetails(studentId) {
@@ -12838,18 +12776,12 @@ function openWhatsApp(studentId) {
    
 async function startApp() {
     try {
-        // ============================================================
-        // 1️⃣ نضهر الـ Splash Screen
-        // ============================================================
         showSplashScreen();
         updateSplashProgress(0, 'جاري التحميل...');
         
         await sleep(500);
         updateSplashProgress(20, 'فحص الاتصال بالإنترنت...');
         
-        // ============================================================
-        // 2️⃣ نفحص الإنترنت
-        // ============================================================
         const hasInternet = await checkInternetConnection();
         await sleep(300);
         
@@ -12863,24 +12795,15 @@ async function startApp() {
         updateSplashProgress(50, '✅ تم الاتصال بالإنترنت');
         await sleep(300);
         
-        // ============================================================
-        // 3️⃣ نحمل البيانات من Firebase
-        // ============================================================
         updateSplashProgress(70, 'جاري تحميل البيانات...');
         await loadAllDataFromFirebase();
         await sleep(300);
         
-        // ============================================================
-        // 4️⃣ نضيف الثيم والأنيميشن
-        // ============================================================
         addThemeStyles();
         
-        // ============================================================
-        // 5️⃣ نضبط الوضع (Light/Dark Mode)
-        // ============================================================
+        // ===== تهيئة الثيم =====
         const savedTheme = localStorage.getItem('theme');
         const body = document.body;
-        
         if (!savedTheme) {
             body.classList.remove('light-mode');
             localStorage.setItem('theme', 'dark');
@@ -12889,60 +12812,53 @@ async function startApp() {
         } else {
             body.classList.remove('light-mode');
         }
-        
         initTheme();
         
-        // ============================================================
-        // 6️⃣ نجهز الإشعارات (مع Check)
-        // ============================================================
+        // ===== تهيئة OneSignal =====
         updateSplashProgress(85, 'جاري تجهيز الإشعارات...');
         
-        // نتأكد إن Firebase Messaging موجود
-        if (typeof firebase !== 'undefined' && firebase.messaging) {
+        // ننتظر تحميل OneSignal
+        let onesignalReady = false;
+        for (let i = 0; i < 20; i++) {
+            if (typeof OneSignal !== 'undefined') {
+                onesignalReady = true;
+                break;
+            }
+            await sleep(300);
+        }
+        
+        if (onesignalReady) {
             try {
                 setupForegroundNotifications();
-                console.log('✅ Firebase Messaging initialized');
+                console.log('✅ OneSignal initialized');
             } catch (error) {
-                console.warn('⚠️ Error setting up notifications:', error);
+                console.warn('⚠️ Error setting up OneSignal:', error);
             }
         } else {
-            console.warn('⚠️ Firebase Messaging not available, skipping notifications');
+            console.warn('⚠️ OneSignal not loaded after waiting');
         }
         
         await sleep(300);
         
-        // ============================================================
-        // 7️⃣ نجهز التطبيق
-        // ============================================================
         updateSplashProgress(95, 'جاري تجهيز التطبيق...');
         await sleep(300);
         
         updateSplashProgress(100, '✅ جاهز!');
         await sleep(400);
         
-        // ============================================================
-        // 8️⃣ نخفي الـ Splash
-        // ============================================================
         hideSplashScreen();
         hideNoInternetScreen();
         
-        // ============================================================
-        // 9️⃣ نطلب الإذن للإشعارات (أول مرة فقط)
-        // ============================================================
+        // ===== طلب الإذن للإشعارات =====
         const notifPermission = localStorage.getItem('notifPermissionAsked');
         if (!notifPermission) {
-            // نتأكد إن الـ Overlay موجود
             const overlay = document.getElementById('notificationOverlay');
             if (overlay) {
                 showNotificationPermissionOverlay();
             } else {
-                // لو مش موجود، نكمل عادي
                 checkAndRouteUser();
             }
         } else {
-            // ============================================================
-            // 🔟 نروح للصفحة المناسبة
-            // ============================================================
             checkAndRouteUser();
         }
         
@@ -12952,7 +12868,6 @@ async function startApp() {
         console.error('❌ Error starting app:', error);
         showToast('حدث خطأ أثناء تشغيل التطبيق', 'error');
         hideSplashScreen();
-        // نروح للصفحة الرئيسية كحل احتياطي
         renderLandingPage();
     }
 }
